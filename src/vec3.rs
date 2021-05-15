@@ -10,7 +10,7 @@ use std::{
 /// Actually, this type is implemented to have 4 elements
 /// for utilizing SIMD and optimization, but last element is hidden.
 ///
-/// To get a actual vector which have only 3 elements inside, convert it into struct `FitVec3`.
+/// To get a actual vector which have only 3 elements inside, convert it into struct [FitVec3].
 ///
 /// # Examples
 ///
@@ -27,7 +27,7 @@ pub struct Vec3 {
 }
 
 impl Vec3 {
-    /// Create new `Vec3` value.
+    /// Create new [Vec3] value.
     ///
     /// # Examples
     ///
@@ -40,7 +40,7 @@ impl Vec3 {
     /// ```
     pub fn new(x: f32, y: f32, z: f32) -> Self { Self { arr: [x, y, z, 0f32] } }
 
-    /// Create `Vec3` value filled with given scalar value `s`.
+    /// Create [Vec3] value filled with given scalar value `s`.
     ///
     /// # Examples
     ///
@@ -144,6 +144,18 @@ impl Vec3 {
     /// assert_eq!(Vec3::new(0f32, 0f32, 1f32), Vec3::unit_z());
     /// ```
     pub fn unit_z() -> Self { Self::new(0f32, 0f32, 1f32) }
+
+    /// Do dot product operation with other `rhs` [Vec3] value.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec3;
+    ///
+    /// assert_eq!(Vec3::new(4f32, 3f32, 2f32).dot(Vec3::new(2f32, 3f32, 4f32)), 25f32);
+    /// ```
+    pub fn dot(&self, rhs: Self) -> f32 { (*self * rhs).arr.iter().sum() }
 }
 
 impl Default for Vec3 {

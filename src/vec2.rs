@@ -21,7 +21,7 @@ pub struct Vec2 {
 }
 
 impl Vec2 {
-    /// Create new `Vec2` value.
+    /// Create new [Vec2] value.
     ///
     /// # Examples
     ///
@@ -34,7 +34,7 @@ impl Vec2 {
     /// ```
     pub fn new(x: f32, y: f32) -> Self { Self { arr: [x, y] } }
 
-    /// Create `Vec2` value filled with given scalar value `s`.
+    /// Create [Vec2] value filled with given scalar value `s`.
     ///
     /// # Examples
     ///
@@ -47,7 +47,7 @@ impl Vec2 {
     /// ```
     pub fn from_scalar(s: f32) -> Self { Self { arr: [s, s] } }
 
-    /// Create new `Vec2` value from array that has 2 elements.
+    /// Create new [Vec2] value from array that has 2 elements.
     pub fn from_array(arr: [f32; 2]) -> Self { Self { arr: [arr[0], arr[1]] } }
 
     /// Get squared length of this vector from `(0, 0)` origin.
@@ -104,7 +104,7 @@ impl Vec2 {
         }
     }
 
-    /// Create x unit `(1, 0, 0)` vector.
+    /// Create x unit `(1, 0)` vector.
     ///
     /// # Examples
     ///
@@ -116,7 +116,7 @@ impl Vec2 {
     /// ```
     pub fn unit_x() -> Self { Self::new(1f32, 0f32) }
 
-    /// Create y unit `(0, 1, 0)` vector.
+    /// Create y unit `(0, 1)` vector.
     ///
     /// # Examples
     ///
@@ -127,11 +127,23 @@ impl Vec2 {
     /// assert_eq!(Vec2::new(0f32, 1f32), Vec2::unit_y());
     /// ```
     pub fn unit_y() -> Self { Self::new(0f32, 1f32) }
+
+    /// Do dot product operation with other `rhs` [Vec2] value.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec2;
+    ///
+    /// assert_eq!(Vec2::new(4f32, 3f32).dot(Vec2::new(3f32, 4f32)), 24f32);
+    /// ```
+    pub fn dot(&self, rhs: Self) -> f32 { (*self * rhs).arr.iter().sum() }
 }
 
 impl Default for Vec2 {
     /// Create zero vector.
-    fn default() -> Self { Self::new(0f32, 0f32) }
+    fn default() -> Self { Self::from_scalar(0f32) }
 }
 
 impl Debug for Vec2 {
