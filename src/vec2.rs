@@ -88,6 +88,8 @@ impl Vec2 {
     ///
     /// // If vector's length is normal, do normlization.
     /// let vec = Vec2::new(3f32, 4f32);
+    /// assert_eq!(vec.x(), 3f32);
+    /// assert_eq!(vec.y(), 4f32);
     /// assert_eq!(vec.into_normalized(), Some(Vec2::new(0.6f32, 0.8f32)));
     ///
     /// // If not, do nothing but return `None`.
@@ -103,6 +105,9 @@ impl Vec2 {
             Some(*self * inv_squared)
         }
     }
+
+    pub fn x(&self) -> f32 { self[0] }
+    pub fn y(&self) -> f32 { self[1] }
 
     /// Create x unit `(1, 0)` vector.
     ///

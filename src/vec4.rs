@@ -50,6 +50,11 @@ impl Vec4 {
     /// Create new [Vec4] value from array that has 4 elements.
     pub fn from_array(arr: [f32; 4]) -> Self { Self { arr } }
 
+    pub fn x(&self) -> f32 { self[0] }
+    pub fn y(&self) -> f32 { self[1] }
+    pub fn z(&self) -> f32 { self[2] }
+    pub fn w(&self) -> f32 { self[3] }
+
     /// Do dot product operation with other `rhs` [Vec4] value.
     ///
     /// # Examples

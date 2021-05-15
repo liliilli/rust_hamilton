@@ -109,6 +109,10 @@ impl Vec3 {
         }
     }
 
+    pub fn x(&self) -> f32 { self[0] }
+    pub fn y(&self) -> f32 { self[1] }
+    pub fn z(&self) -> f32 { self[2] }
+
     /// Create x unit `(1, 0, 0)` vector.
     ///
     /// # Examples
