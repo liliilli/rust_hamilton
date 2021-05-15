@@ -103,6 +103,30 @@ impl Vec2 {
             Some(*self * inv_squared)
         }
     }
+
+    /// Create x unit `(1, 0, 0)` vector.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec2;
+    ///
+    /// assert_eq!(Vec2::new(1f32, 0f32), Vec2::unit_x());
+    /// ```
+    pub fn unit_x() -> Self { Self::new(1f32, 0f32) }
+
+    /// Create y unit `(0, 1, 0)` vector.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec2;
+    ///
+    /// assert_eq!(Vec2::new(0f32, 1f32), Vec2::unit_y());
+    /// ```
+    pub fn unit_y() -> Self { Self::new(0f32, 1f32) }
 }
 
 impl Default for Vec2 {
