@@ -1,3 +1,4 @@
+use crate::{Vec3, Vec4};
 use std::{
     fmt::Debug,
     iter,
@@ -90,13 +91,13 @@ impl Vec2 {
     /// let vec = Vec2::new(3f32, 4f32);
     /// assert_eq!(vec.x(), 3f32);
     /// assert_eq!(vec.y(), 4f32);
-    /// assert_eq!(vec.into_normalized(), Some(Vec2::new(0.6f32, 0.8f32)));
+    /// assert_eq!(vec.to_normalized(), Some(Vec2::new(0.6f32, 0.8f32)));
     ///
     /// // If not, do nothing but return `None`.
     /// let vec = Vec2::new(3.24e-76f32, 0.8e-54f32);
-    /// assert_eq!(vec.into_normalized(), None);
+    /// assert_eq!(vec.to_normalized(), None);
     /// ```
-    pub fn into_normalized(&self) -> Option<Self> {
+    pub fn to_normalized(&self) -> Option<Self> {
         let squared_length = self.square_length();
         if !squared_length.is_normal() {
             None

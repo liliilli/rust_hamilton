@@ -1,3 +1,4 @@
+use crate::Vec4;
 use std::{
     convert::From,
     fmt::Debug,
@@ -97,9 +98,9 @@ impl Vec3 {
     /// use math::Vec3;
     ///
     /// let vec = Vec3::new(3f32, 0f32, 4f32);
-    /// assert_eq!(vec.into_normalized(), Some(Vec3::new(0.6f32, 0f32, 0.8f32)));
+    /// assert_eq!(vec.to_normalized(), Some(Vec3::new(0.6f32, 0f32, 0.8f32)));
     /// ```
-    pub fn into_normalized(&self) -> Option<Self> {
+    pub fn to_normalized(&self) -> Option<Self> {
         let squared_length = self.square_length();
         if !squared_length.is_normal() {
             None
@@ -160,6 +161,23 @@ impl Vec3 {
     /// assert_eq!(Vec3::new(4f32, 3f32, 2f32).dot(Vec3::new(2f32, 3f32, 4f32)), 25f32);
     /// ```
     pub fn dot(&self, rhs: Self) -> f32 { (*self * rhs).arr.iter().sum() }
+
+    /// Convert into [Vec4] as a homogeneous coordinate.
+    ///
+    /// See [https://en.wikipedia.org/wiki/Homogeneous_coordinates]
+    /// to know what homogeneous coordinate is.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Vec3, Vec4};
+    ///
+    /// let vec3 = Vec3::new(0f32, 2f32, 3f32);
+    /// let homo = vec3.to_homogeneous();
+    /// assert_eq!(homo, Vec4::new(0f32, 2f32, 3f32, 1f32));
+    /// ```
+    pub fn to_homogeneous(&self) -> Vec4 { Vec4::new(self.arr[0], self.arr[1], self.arr[2], 1f32) }
 }
 
 impl Default for Vec3 {
