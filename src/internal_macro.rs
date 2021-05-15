@@ -35,6 +35,12 @@ macro_rules! forward_ref_assign {
     };
 }
 
+// ************************************************************************************************
+//
+// VECTOR IMPL MACRO SECTION
+//
+// ************************************************************************************************
+
 ///
 macro_rules! op_binary_impl {
     ($t:ty, $imp:ident, $method:ident, $v: tt, $($i:expr)*) => {
@@ -112,5 +118,79 @@ macro_rules! op_assign_scalar_impl {
                  *self $v <$t>::from_scalar(*s)
             }
         }
+    };
+}
+
+// ************************************************************************************************
+//
+// ANGLE IMPL MACRO SECTION
+//
+// ************************************************************************************************
+
+///
+macro_rules! op_angle_binary_impl {
+    ($t:ty, $imp:ident, $method:ident, $v: tt) => {
+        impl $imp for $t {
+            type Output = $t;
+
+            #[inline]
+            fn $method(self, rhs: $t) -> Self { Self(self.0 $v rhs.0) }
+        }
+
+        forward_ref_binop! { impl $imp, $method for $t, $t }
+    };
+}
+
+macro_rules! op_angle_scalar_mul_impl {
+    ($t:ty, $imp:ident, $method:ident, $v: tt, $($u:ty)*) => {
+        $(
+            impl $imp<$u> for $t {
+                type Output = $t;
+
+                #[inline]
+                fn $method(self, s: $u) -> Self::Output { Self(self.0 $v (s as f32)) }
+            }
+
+            impl<'a> $imp<$u> for &'a $t {
+                type Output = <$t as $imp<$u>>::Output;
+
+                #[inline]
+                fn $method(self, s: $u) -> <$t as $imp<$u>>::Output { $imp::$method(*self, s) }
+            }
+        )*
+    };
+}
+
+///
+macro_rules! op_angle_assign_impl {
+    ($t:ty, $imp:ident, $method:ident, $v: tt) => {
+        impl $imp for $t {
+            #[inline]
+            fn $method(&mut self, rhs: $t) {
+                self.0 $v rhs.0;
+            }
+        }
+
+        forward_ref_assign!{impl $imp, $method for $t, $t}
+    };
+}
+
+macro_rules! op_angle_assign_scalar_impl {
+    ($t:ty, $imp:ident, $method:ident, $v: tt, $($u:ty)*) => {
+        $(
+            impl $imp<$u> for $t {
+                #[inline]
+                fn $method(&mut self, s: $u) {
+                     self.0 $v (s as f32);
+                }
+            }
+
+            impl $imp<&$u> for $t {
+                #[inline]
+                fn $method(&mut self, s: &$u) {
+                     self.0 $v (*s as f32);
+                }
+            }
+        )*
     };
 }
