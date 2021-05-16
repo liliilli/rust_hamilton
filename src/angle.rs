@@ -1,4 +1,4 @@
-use crate::RangeWrappableMinMax;
+use crate::{NearlyEqual, RangeWrappableMinMax};
 use std::{
     f32::consts::PI,
     ops::{self, Add, AddAssign, Deref, DerefMut, Mul, MulAssign, Sub, SubAssign},
@@ -35,6 +35,13 @@ impl DerefMut for Degree {
 
 impl From<Radian> for Degree {
     fn from(radian: Radian) -> Self { Degree(*radian * 180f32 / PI) }
+}
+
+impl NearlyEqual for Degree {
+    fn nearly_equal(&self, to: Self, tolerance: Self) -> bool {
+        let off = *self - to;
+        off.0.abs() <= tolerance.0
+    }
 }
 
 op_angle_binary_impl!(Degree, Add, add, +);
@@ -78,6 +85,13 @@ impl ops::Deref for Radian {
 
 impl From<Degree> for Radian {
     fn from(degree: Degree) -> Self { Radian(*degree * PI / 180f32) }
+}
+
+impl NearlyEqual for Radian {
+    fn nearly_equal(&self, to: Self, tolerance: Self) -> bool {
+        let off = *self - to;
+        off.0.abs() <= tolerance.0
+    }
 }
 
 op_angle_binary_impl!(Radian, Add, add, +);
