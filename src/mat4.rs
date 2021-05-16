@@ -355,6 +355,75 @@ impl Mat4 {
         }
     }
 
+    /// Multiply to other matrix.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Vec4, Mat4};
+    ///
+    /// macro_rules! f32_arr { ($($e:expr),*) => { [ $($e as f32),* ] }; }
+    ///
+    /// let lhs = Mat4::from_elements_array(
+    ///     f32_arr!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+    /// );
+    /// let rhs = lhs * -1f32;
+    /// let mat = lhs.mul(rhs);
+    /// for (i, col_vec) in mat.iter().enumerate() {
+    ///     match i {
+    ///     0 => assert_eq!(*col_vec, Vec4::from_array(f32_arr!(-56, -62, -68, -74))),
+    ///     1 => assert_eq!(*col_vec, Vec4::from_array(f32_arr!(-152, -174, -196, -218))),
+    ///     2 => assert_eq!(*col_vec, Vec4::from_array(f32_arr!(-248, -286, -324, -362))),
+    ///     3 => assert_eq!(*col_vec, Vec4::from_array(f32_arr!(-344, -398, -452, -506))),
+    ///     _ => (),
+    ///     }
+    /// }
+    /// ```
+    pub fn mul(&self, rhs: Self) -> Self {
+        let lhs = self.to_transposed();
+        Self::from_elements_array([
+            rhs[0].dot(lhs[0]),
+            rhs[0].dot(lhs[1]),
+            rhs[0].dot(lhs[2]),
+            rhs[0].dot(lhs[3]),
+            rhs[1].dot(lhs[0]),
+            rhs[1].dot(lhs[1]),
+            rhs[1].dot(lhs[2]),
+            rhs[1].dot(lhs[3]),
+            rhs[2].dot(lhs[0]),
+            rhs[2].dot(lhs[1]),
+            rhs[2].dot(lhs[2]),
+            rhs[2].dot(lhs[3]),
+            rhs[3].dot(lhs[0]),
+            rhs[3].dot(lhs[1]),
+            rhs[3].dot(lhs[2]),
+            rhs[3].dot(lhs[3]),
+        ])
+    }
+
+    /// Multiply to [Vec4] and return [Vec4].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Vec4, Mat4};
+    ///
+    /// macro_rules! f32_arr { ($($e:expr),*) => { [ $($e as f32),* ] }; }
+    ///
+    /// let lhs = Mat4::from_elements_array(
+    ///     f32_arr!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+    /// );
+    /// let rhs = Vec4::new(3f32, 6f32, 9f32, 1f32);
+    /// let vec = lhs.mul_vec4(rhs);
+    /// assert_eq!(vec, Vec4::new(108f32, 127f32, 146f32, 165f32));
+    /// ```
+    pub fn mul_vec4(&self, rhs: Vec4) -> Vec4 {
+        let lhs = self.to_transposed();
+        Vec4::new(lhs[0].dot(rhs), lhs[1].dot(rhs), lhs[2].dot(rhs), lhs[3].dot(rhs))
+    }
+
     /// Return slice that traverses each elements of matrix with column order.
     ///
     /// # Examples
@@ -440,6 +509,18 @@ impl IndexMut<usize> for Mat4 {
 op_matrix_binary_impl!(Mat4, Add, add, +, 0 1 2 3);
 op_matrix_binary_impl!(Mat4, Sub, sub, -, 0 1 2 3);
 op_matrix_binary_impl!(Mat4, Mul, mul, *, 0 1 2 3);
+op_matrix_scalar_mul_impl!(Mat4, Mul, mul, *, 0 1 2 3, u8);
+op_matrix_scalar_mul_impl!(Mat4, Mul, mul, *, 0 1 2 3, u16);
+op_matrix_scalar_mul_impl!(Mat4, Mul, mul, *, 0 1 2 3, u32);
+op_matrix_scalar_mul_impl!(Mat4, Mul, mul, *, 0 1 2 3, u64);
+op_matrix_scalar_mul_impl!(Mat4, Mul, mul, *, 0 1 2 3, usize);
+op_matrix_scalar_mul_impl!(Mat4, Mul, mul, *, 0 1 2 3, i8);
+op_matrix_scalar_mul_impl!(Mat4, Mul, mul, *, 0 1 2 3, i16);
+op_matrix_scalar_mul_impl!(Mat4, Mul, mul, *, 0 1 2 3, i32);
+op_matrix_scalar_mul_impl!(Mat4, Mul, mul, *, 0 1 2 3, i64);
+op_matrix_scalar_mul_impl!(Mat4, Mul, mul, *, 0 1 2 3, isize);
+op_matrix_scalar_mul_impl!(Mat4, Mul, mul, *, 0 1 2 3, f32);
+op_matrix_scalar_mul_impl!(Mat4, Mul, mul, *, 0 1 2 3, f64);
 
 #[cfg(test)]
 mod test {
