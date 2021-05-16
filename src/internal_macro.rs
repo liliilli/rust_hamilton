@@ -194,3 +194,23 @@ macro_rules! op_angle_assign_scalar_impl {
         )*
     };
 }
+
+// ************************************************************************************************
+//
+// MATRIX IMPL MACRO SECTION
+//
+// ************************************************************************************************
+
+///
+macro_rules! op_matrix_binary_impl {
+    ($t:ty, $imp:ident, $method:ident, $v: tt, $($i:expr)*) => {
+        impl $imp for $t {
+            type Output = $t;
+
+            #[inline]
+            fn $method(self, rhs: $t) -> Self { Self { val: [ $(self[$i] $v rhs[$i]),* ] } }
+        }
+
+        forward_ref_binop! { impl $imp, $method for $t, $t }
+    };
+}
