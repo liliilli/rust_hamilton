@@ -473,6 +473,11 @@ impl Mat4 {
     pub fn iter(&self) -> slice::Iter<'_, Vec4> { self.val.iter() }
 }
 
+impl Default for Mat4 {
+    /// Create identity matrix.
+    fn default() -> Self { Self::from_identity() }
+}
+
 impl Index<usize> for Mat4 {
     type Output = Vec4;
 
