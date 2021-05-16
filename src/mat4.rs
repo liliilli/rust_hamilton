@@ -251,7 +251,7 @@ impl Mat4 {
         self[0].dot(coefficient)
     }
 
-    /// Get fully inversed matrix if matrix can be inverted.
+    /// Get fully inverted matrix if matrix can be inverted.
     ///
     /// This method does not regard matrix as homogeneous coordinates transform,
     /// so maybe slower than transform version.
@@ -267,8 +267,8 @@ impl Mat4 {
     /// let mat = Mat4::from_elements_array(
     ///     f32_arr!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
     /// );
-    /// assert_eq!(mat.to_inversed(), None);
-    /// assert_eq!(mat.to_transposed().to_inversed(), None);
+    /// assert_eq!(mat.to_inverted(), None);
+    /// assert_eq!(mat.to_transposed().to_inverted(), None);
     ///
     /// let mat = Mat4::from_column_vec4s(
     ///     Vec4::new(0.707f32, 0f32, 0.707f32, 0f32),
@@ -276,26 +276,26 @@ impl Mat4 {
     ///     Vec4::new(-0.707f32, 0f32, 0.707f32, 0f32),
     ///     Vec4::new(4f32, -3f32, 1f32, 1f32),
     /// );
-    /// assert_ne!(mat.to_inversed(), None);
+    /// assert_ne!(mat.to_inverted(), None);
     ///
     /// let mat = Mat4::from_elements_array(
     ///     f32_arr!(4, 0, 0, 0, 0, 4, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1)
     /// );
     /// assert_eq!(mat.determinant(), 64f32);
     /// assert_eq!(
-    ///     mat.to_inversed(),
+    ///     mat.to_inverted(),
     ///     Some(Mat4::from_elements_array(
     ///         f32_arr!(0.25, 0, 0, 0, 0, 0.25, 0, 0, 0, 0, 0.25, 0, 0, 0, 0, 1)
     ///     ))
     /// );
     ///
-    /// assert_eq!(Mat4::from_identity().to_inversed(), Some(Mat4::from_identity()));
+    /// assert_eq!(Mat4::from_identity().to_inverted(), Some(Mat4::from_identity()));
     /// ```
     ///
     /// # Todos
     ///
     /// * Support SIMD for the fast operation.
-    pub fn to_inversed(&self) -> Option<Mat4> {
+    pub fn to_inverted(&self) -> Option<Mat4> {
         let c00 = (self[2][2] * self[3][3]) - (self[3][2] * self[2][3]);
         let c02 = (self[1][2] * self[3][3]) - (self[3][2] * self[1][3]);
         let c03 = (self[1][2] * self[2][3]) - (self[2][2] * self[1][3]);
@@ -536,8 +536,8 @@ mod test {
         macro_rules! f32_arr { ($($e:expr),*) => { [ $($e as f32),* ] }; }
 
         let mat = Mat4::from_elements_array(f32_arr!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
-        assert_eq!(mat.to_inversed(), None);
-        assert_eq!(mat.to_transposed().to_inversed(), None);
+        assert_eq!(mat.to_inverted(), None);
+        assert_eq!(mat.to_transposed().to_inverted(), None);
 
         let mat = Mat4::from_column_vec4s(
             Vec4::new(0.707f32, 0f32, 0.707f32, 0f32),
@@ -545,14 +545,14 @@ mod test {
             Vec4::new(-0.707f32, 0f32, 0.707f32, 0f32),
             Vec4::new(4f32, -3f32, 1f32, 1f32),
         );
-        assert_ne!(mat.to_inversed(), None);
+        assert_ne!(mat.to_inverted(), None);
 
-        assert_eq!(Mat4::from_identity().to_inversed(), Some(Mat4::from_identity()));
+        assert_eq!(Mat4::from_identity().to_inverted(), Some(Mat4::from_identity()));
 
         let mat = Mat4::from_elements_array(f32_arr!(4, 0, 0, 0, 0, 4, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1));
         assert_eq!(mat.determinant(), 64f32);
         assert_eq!(
-            mat.to_inversed(),
+            mat.to_inverted(),
             Some(Mat4::from_elements_array(f32_arr!(
                 0.25, 0, 0, 0, 0, 0.25, 0, 0, 0, 0, 0.25, 0, 0, 0, 0, 1
             )))
