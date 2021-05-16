@@ -93,7 +93,7 @@ impl IndexMut<usize> for Vec4 {
 }
 
 op_binary_impl!(Vec4, Add, add, +, 0 1 2 3);
-op_binary_impl!(Vec4, Sub, sub, +, 0 1 2 3);
+op_binary_impl!(Vec4, Sub, sub, -, 0 1 2 3);
 op_binary_impl!(Vec4, Mul, mul, *, 0 1 2 3);
 
 op_scalar_impl!(Vec4, Add, add, +);
