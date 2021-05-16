@@ -232,3 +232,95 @@ macro_rules! op_matrix_scalar_mul_impl {
         }
     };
 }
+
+// ************************************************************************************************
+//
+// ROTATION IMPL MACRO SECTION
+//
+// ************************************************************************************************
+
+///
+macro_rules! op_rotation_binary_impl {
+    ($t:ty, $imp:ident, $method:ident, $v: tt) => {
+        impl $imp for $t {
+            type Output = $t;
+
+            #[inline]
+            fn $method(self, rhs: $t) -> Self {
+                Self {
+                    roll: self.roll $v rhs.roll,
+                    yaw: self.yaw $v rhs.yaw,
+                    pitch: self.pitch $v rhs.pitch,
+                }
+            }
+        }
+
+        forward_ref_binop! { impl $imp, $method for $t, $t }
+    };
+}
+
+///
+macro_rules! op_rotation_scalar_mul_impl {
+    ($t:ty, $imp:ident, $method:ident, $v: tt, $($u:ty)*) => {
+        $(
+            impl $imp<$u> for $t {
+                type Output = $t;
+
+                #[inline]
+                fn $method(self, s: $u) -> Self::Output { Self{
+                    roll: self.roll $v s,
+                    yaw: self.yaw $v s,
+                    pitch: self.pitch $v s,
+                } }
+            }
+
+            impl<'a> $imp<$u> for &'a $t {
+                type Output = <$t as $imp<$u>>::Output;
+
+                #[inline]
+                fn $method(self, s: $u) -> <$t as $imp<$u>>::Output { $imp::$method(*self, s) }
+            }
+        )*
+    };
+}
+
+///
+macro_rules! op_rotation_assign_impl {
+    ($t:ty, $imp:ident, $method:ident, $v: tt) => {
+        impl $imp for $t {
+            #[inline]
+            fn $method(&mut self, rhs: $t) {
+                self.roll $v rhs.roll;
+                self.yaw $v rhs.yaw;
+                self.pitch $v rhs.pitch;
+            }
+        }
+
+        forward_ref_assign! {impl $imp, $method for $t, $t}
+    };
+}
+
+///
+macro_rules! op_rotation_assign_scalar_impl {
+    ($t:ty, $imp:ident, $method:ident, $v: tt, $($u:ty)*) => {
+        $(
+            impl $imp<$u> for $t {
+                #[inline]
+                fn $method(&mut self, s: $u) {
+                    self.roll $v s;
+                    self.yaw $v s;
+                    self.pitch $v s;
+                }
+            }
+
+            impl $imp<&$u> for $t {
+                #[inline]
+                fn $method(&mut self, s: &$u) {
+                    self.roll $v s;
+                    self.yaw $v s;
+                    self.pitch $v s;
+                }
+            }
+        )*
+    };
+}
