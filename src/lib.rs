@@ -2,6 +2,7 @@
 mod internal_macro;
 
 pub mod angle;
+pub mod index;
 pub mod mat3;
 pub mod mat4;
 pub mod nearly_equal;
@@ -14,6 +15,8 @@ pub mod wrappable;
 
 pub use angle::Degree;
 pub use angle::Radian;
+pub use index::Index2;
+pub use index::Offset2;
 pub use mat3::Mat3;
 pub use mat4::Mat4;
 pub use nearly_equal::NearlyEqual;

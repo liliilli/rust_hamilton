@@ -16,9 +16,7 @@ impl Spherical {
     /// Create `Spherical` from `Radian` values.
     ///
     /// Given `Radian` is not normalized.
-    pub fn from_radians(phi: Radian, theta: Radian) -> Self {
-        Self { phi, theta }
-    }
+    pub fn from_radians(phi: Radian, theta: Radian) -> Self { Self { phi, theta } }
 
     /// Create `Spherical` from `Degree` values.
     ///

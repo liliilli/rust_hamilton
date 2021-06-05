@@ -1,5 +1,5 @@
 use std::{
-    fmt::Debug,
+    fmt::{Debug, Display},
     iter,
     ops::{Add, AddAssign, Index, IndexMut, Mul, MulAssign, Sub, SubAssign},
 };
@@ -74,6 +74,16 @@ impl Default for Vec4 {
 }
 
 impl Debug for Vec4 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "Vec4 {{x: {:.3}, y: {:.3}, z: {:.3}, w: {:.3}}}",
+            self.arr[0], self.arr[1], self.arr[2], self.arr[3]
+        )
+    }
+}
+
+impl Display for Vec4 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
