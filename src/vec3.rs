@@ -1,4 +1,4 @@
-use crate::{Radian, Vec4};
+use crate::{EError, Radian, Vec4};
 use std::{
     convert::From,
     fmt::Debug,
@@ -110,15 +110,15 @@ impl Vec3 {
     /// use math::Vec3;
     ///
     /// let vec = Vec3::new(3f32, 0f32, 4f32);
-    /// assert_eq!(vec.to_normalized(), Some(Vec3::new(0.6f32, 0f32, 0.8f32)));
+    /// assert_eq!(vec.to_normalized().unwrap(), Vec3::new(0.6f32, 0f32, 0.8f32));
     /// ```
-    pub fn to_normalized(&self) -> Option<Self> {
+    pub fn to_normalized(&self) -> Result<Self, EError> {
         let squared_length = self.square_length();
         if !squared_length.is_normal() {
-            None
+            Err(EError::ZeroLengthVector)
         } else {
             let inv_squared = 1f32 / squared_length.sqrt();
-            Some(*self * inv_squared)
+            Ok(*self * inv_squared)
         }
     }
 
@@ -245,6 +245,40 @@ impl Vec3 {
         nonzero_to * (self.dot(nonzero_to) * nonzero_to.square_length().recip())
     }
 
+    /// Project self [Vec3] onto given vector `rhs`.
+    ///
+    /// If given `rhs`'s length is zero or nearly zeroed, just return with error value.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec3;
+    ///
+    /// let a = Vec3::new(3f32, 5f32, 4f32);
+    /// let p = Vec3::new(2f32, 0f32, 2f32);
+    /// let a_on_p = a.projected_on(p).unwrap();
+    /// assert_eq!(a_on_p, Vec3::new(3.5f32, 0f32, 3.5f32));
+    /// ```
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec3;
+    ///
+    /// let a = Vec3::new(3f32, 5f32, 4f32);
+    /// let p = Vec3::from_scalar(0f32);
+    /// let should_err = a.projected_on(p).is_err();
+    /// assert_eq!(should_err, true);
+    /// ```
+    pub fn projected_on(&self, rhs: Vec3) -> Result<Self, EError> {
+        let recip = rhs.square_length().recip();
+        if !recip.is_normal() {
+            return Err(EError::ZeroLengthVector);
+        } else {
+            Ok(rhs * (self.dot(rhs) * recip))
+        }
+    }
+
     /// Caclulate orthogonal to `nonzero_to` but connected to `self`,
     /// and sum of projected vector on `nonzero_to` can be itself.
     ///
@@ -263,11 +297,40 @@ impl Vec3 {
         *self - self.uncheck_projected_on(nonzero_to)
     }
 
-    /// Rotate vector about given `axis` [Vec3] with angle [Radian].
+    /// Caclulate orthogonal to `rhs` but connected to `self`,
+    ///
+    /// If given `rhs`'s length is zero or nearly zeroed, just return with error value.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec3;
+    ///
+    /// let a = Vec3::new(3f32, 5f32, 4f32);
+    /// let p = Vec3::new(1f32, 0f32, 0f32);
+    /// let a_from_a_on_p = a.rejected_from(p).unwrap();
+    /// assert_eq!(a_from_a_on_p, Vec3::new(0f32, 5f32, 4f32));
+    /// ```
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec3;
+    ///
+    /// let a = Vec3::new(3f32, 5f32, 4f32);
+    /// let p = Vec3::from_scalar(0f32);
+    /// let should_err = a.rejected_from(p).is_err();
+    /// assert_eq!(should_err, true);
+    /// ```
+    pub fn rejected_from(&self, rhs: Vec3) -> Result<Self, EError> {
+        Ok(*self - self.projected_on(rhs)?)
+    }
+
+    /// rotate vector about given `axis` [Vec3] with angle [Radian].
     ///
     /// `axis` [Vec3] vector should not be zero length.
     ///
-    /// # Examples
+    /// # examples
     ///
     /// ```
     /// use hamilton as math;
@@ -288,6 +351,42 @@ impl Vec3 {
         (*self * cos) + (axis * (self.dot(axis) * (1f32 - cos))) - (self.cross(axis) * sin)
     }
 
+    /// rotate vector about given `axis` [Vec3] with angle [Radian].
+    ///
+    /// If given `axis`'s length is zero or nearly zeroed, just return with error value.
+    ///
+    /// # examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Vec3, Radian, Degree, NearlyEqual};
+    ///
+    /// let vec = Vec3::new(3f32, 5f32, 0f32);
+    /// let axis = Vec3::unit_y();
+    ///
+    /// let rot90 = vec.rotated_about_axis(axis, Degree(90f32).into()).unwrap();
+    /// assert!(rot90.x().nearly_equal(0f32, 1e-4));
+    /// assert!(rot90.y().nearly_equal(5f32, 1e-4));
+    /// assert!(rot90.z().nearly_equal(-3f32, 1e-4));
+    /// ```
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Vec3, Radian, Degree, NearlyEqual};
+    ///
+    /// let vec = Vec3::new(3f32, 5f32, 0f32);
+    /// let zeroed = Vec3::from_scalar(0f32);
+    ///
+    /// let should_err = vec.rotated_about_axis(zeroed, Degree(90f32).into()).is_err();
+    /// assert_eq!(should_err, true);
+    /// ```
+    pub fn rotated_about_axis(&self, axis: Vec3, angle: Radian) -> Result<Self, EError> {
+        let axis = axis.to_normalized()?;
+        let cos = angle.cos();
+        let sin = angle.sin();
+        Ok((*self * cos) + (axis * (self.dot(axis) * (1f32 - cos))) - (self.cross(axis) * sin))
+    }
+
     /// Get reflected vector of `self` through non-zero vector [Vec3] `nonzero_vec`.
     ///
     /// `nonzero_vec` [Vec3] vector should not be zero length.
@@ -296,7 +395,7 @@ impl Vec3 {
     ///
     /// ```
     /// use hamilton as math;
-    /// use math::{Vec3, NearlyEqual};
+    /// use math::Vec3;
     ///
     /// let vec = Vec3::new(3f32, 4f32, 5f32);
     /// let axis = Vec3::unit_x();
@@ -307,6 +406,35 @@ impl Vec3 {
         self.uncheck_rejected_from(nonzero_vec) - self.uncheck_projected_on(nonzero_vec)
     }
 
+    /// Get reflected vector of `self` through non-zero vector [Vec3] `rhs`.
+    ///
+    /// If given `rhs`'s length is zero or nearly zeroed, just return with error value.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec3;
+    ///
+    /// let vec = Vec3::new(3f32, 4f32, 5f32);
+    /// let axis = Vec3::unit_x();
+    /// let reflected = vec.reflected_through(axis).unwrap();
+    /// assert_eq!(reflected, Vec3::new(-3f32, 4f32, 5f32));
+    /// ```
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec3;
+    ///
+    /// let vec = Vec3::new(3f32, 4f32, 5f32);
+    /// let zeroed = Vec3::from_scalar(0f32);
+    /// let should_err = vec.reflected_through(zeroed).is_err();
+    /// assert_eq!(should_err, true);
+    /// ```
+    pub fn reflected_through(&self, rhs: Vec3) -> Result<Self, EError> {
+        Ok(self.rejected_from(rhs)? - self.projected_on(rhs)?)
+    }
+
     /// Get the involution of `self` [Vec3] through the vector `nonzero_vec`.
     ///
     /// `nonzero_vec` [Vec3] vector should not be zero length.
@@ -315,7 +443,7 @@ impl Vec3 {
     ///
     /// ```
     /// use hamilton as math;
-    /// use math::{Vec3, NearlyEqual};
+    /// use math::Vec3;
     ///
     /// let vec = Vec3::new(3f32, 4f32, 5f32);
     /// let axis = Vec3::unit_x();
@@ -324,6 +452,35 @@ impl Vec3 {
     /// ```
     pub fn uncheck_involuted_through(&self, nonzero_vec: Vec3) -> Self {
         self.uncheck_projected_on(nonzero_vec) - self.uncheck_rejected_from(nonzero_vec)
+    }
+
+    /// Get the involution of `self` [Vec3] through the vector `rhs`.
+    ///
+    /// If given `rhs`'s length is zero or nearly zeroed, just return with error value.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec3;
+    ///
+    /// let vec = Vec3::new(3f32, 4f32, 5f32);
+    /// let axis = Vec3::unit_x();
+    /// let involuted = vec.involuted_through(axis).unwrap();
+    /// assert_eq!(involuted, Vec3::new(3f32, -4f32, -5f32));
+    /// ```
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec3;
+    ///
+    /// let vec = Vec3::new(3f32, 4f32, 5f32);
+    /// let zeroed = Vec3::from_scalar(0f32);
+    /// let should_err = vec.involuted_through(zeroed).is_err();
+    /// assert_eq!(should_err, true);
+    /// ```
+    pub fn involuted_through(&self, rhs: Vec3) -> Result<Self, EError> {
+        Ok(self.projected_on(rhs)? - self.rejected_from(rhs)?)
     }
 
     /// Convert into [Vec4] as a homogeneous coordinate.
