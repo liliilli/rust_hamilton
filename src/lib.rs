@@ -2,6 +2,7 @@
 mod internal_macro;
 
 pub mod angle;
+pub mod error;
 pub mod index;
 pub mod mat3;
 pub mod mat4;
@@ -16,6 +17,7 @@ pub mod wrappable;
 
 pub use angle::Degree;
 pub use angle::Radian;
+pub use error::EError;
 pub use index::Index2;
 pub use index::Offset2;
 pub use mat3::Mat3;
