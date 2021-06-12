@@ -39,7 +39,11 @@ impl Vec3 {
     /// let vec = Vec3::new(6f32, 8f32, 10f32);
     /// assert_eq!(vec * 0.5f32, Vec3::new(3f32, 4f32, 5f32));
     /// ```
-    pub fn new(x: f32, y: f32, z: f32) -> Self { Self { arr: [x, y, z, 0f32] } }
+    pub fn new(x: f32, y: f32, z: f32) -> Self {
+        Self {
+            arr: [x, y, z, 0f32],
+        }
+    }
 
     /// Create [Vec3] value filled with given scalar value `s`.
     ///
@@ -52,7 +56,11 @@ impl Vec3 {
     /// let vec = Vec3::from_scalar(17f32) * 0.5f32;
     /// assert_eq!(vec, Vec3::from_scalar(8.5f32));
     /// ```
-    pub fn from_scalar(s: f32) -> Self { Self { arr: [s, s, s, 0f32] } }
+    pub fn from_scalar(s: f32) -> Self {
+        Self {
+            arr: [s, s, s, 0f32],
+        }
+    }
 
     /// Create new `Vec3` value from array that has 3 elements.
     pub fn from_array(arr: [f32; 3]) -> Self {
@@ -72,7 +80,9 @@ impl Vec3 {
     /// let vec = Vec3::new(3f32, 4f32, 5f32);
     /// assert_eq!(vec.square_length(), 50f32);
     /// ```
-    pub fn square_length(&self) -> f32 { self.arr.iter().fold(0f32, |sum, i| sum + i.powi(2)) }
+    pub fn square_length(&self) -> f32 {
+        self.arr.iter().fold(0f32, |sum, i| sum + i.powi(2))
+    }
 
     /// Get length of this vector from `(0, 0, 0)` origin.
     ///
@@ -85,7 +95,9 @@ impl Vec3 {
     /// let vec = Vec3::new(3f32, 4f32, 5f32);
     /// assert_eq!(vec.length(), 50f32.sqrt());
     /// ```
-    pub fn length(&self) -> f32 { self.square_length().sqrt() }
+    pub fn length(&self) -> f32 {
+        self.square_length().sqrt()
+    }
 
     /// Create normalized vector which length is projected to 1.
     ///
@@ -110,9 +122,15 @@ impl Vec3 {
         }
     }
 
-    pub fn x(&self) -> f32 { self[0] }
-    pub fn y(&self) -> f32 { self[1] }
-    pub fn z(&self) -> f32 { self[2] }
+    pub fn x(&self) -> f32 {
+        self[0]
+    }
+    pub fn y(&self) -> f32 {
+        self[1]
+    }
+    pub fn z(&self) -> f32 {
+        self[2]
+    }
 
     /// Create x unit `(1, 0, 0)` vector.
     ///
@@ -124,7 +142,9 @@ impl Vec3 {
     ///
     /// assert_eq!(Vec3::new(1f32, 0f32, 0f32), Vec3::unit_x());
     /// ```
-    pub fn unit_x() -> Self { Self::new(1f32, 0f32, 0f32) }
+    pub fn unit_x() -> Self {
+        Self::new(1f32, 0f32, 0f32)
+    }
 
     /// Create y unit `(0, 1, 0)` vector.
     ///
@@ -136,7 +156,9 @@ impl Vec3 {
     ///
     /// assert_eq!(Vec3::new(0f32, 1f32, 0f32), Vec3::unit_y());
     /// ```
-    pub fn unit_y() -> Self { Self::new(0f32, 1f32, 0f32) }
+    pub fn unit_y() -> Self {
+        Self::new(0f32, 1f32, 0f32)
+    }
 
     /// Create z unit `(0, 0, 1)` vector.
     ///
@@ -148,7 +170,9 @@ impl Vec3 {
     ///
     /// assert_eq!(Vec3::new(0f32, 0f32, 1f32), Vec3::unit_z());
     /// ```
-    pub fn unit_z() -> Self { Self::new(0f32, 0f32, 1f32) }
+    pub fn unit_z() -> Self {
+        Self::new(0f32, 0f32, 1f32)
+    }
 
     /// Do dot product operation with other `rhs` [Vec3] value.
     ///
@@ -160,7 +184,29 @@ impl Vec3 {
     ///
     /// assert_eq!(Vec3::new(4f32, 3f32, 2f32).dot(Vec3::new(2f32, 3f32, 4f32)), 25f32);
     /// ```
-    pub fn dot(&self, rhs: Self) -> f32 { (*self * rhs).arr.iter().sum() }
+    pub fn dot(&self, rhs: Self) -> f32 {
+        (*self * rhs).arr.iter().sum()
+    }
+
+    /// Do cross product operation with other `rhs` [Vec3] value.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec3;
+    ///
+    /// assert_eq!(
+    ///     Vec3::new(-4f32, 3f32, -2f32).cross(
+    ///     Vec3::new(2f32, -3f32, 4f32)
+    /// ), Vec3::new(6f32, 12f32, 6f32));
+    /// ```
+    pub fn cross(&self, rhs: Self) -> Self {
+        let x = (self.y() * rhs.z()) - (self.z() * rhs.y());
+        let y = (self.z() * rhs.x()) - (self.x() * rhs.z());
+        let z = (self.x() * rhs.y()) - (self.y() * rhs.x());
+        Self::new(x, y, z)
+    }
 
     /// Convert into [Vec4] as a homogeneous coordinate.
     ///
@@ -177,12 +223,16 @@ impl Vec3 {
     /// let homo = vec3.to_homogeneous();
     /// assert_eq!(homo, Vec4::new(0f32, 2f32, 3f32, 1f32));
     /// ```
-    pub fn to_homogeneous(&self) -> Vec4 { Vec4::new(self.arr[0], self.arr[1], self.arr[2], 1f32) }
+    pub fn to_homogeneous(&self) -> Vec4 {
+        Vec4::new(self.arr[0], self.arr[1], self.arr[2], 1f32)
+    }
 }
 
 impl Default for Vec3 {
     /// Create zero vector.
-    fn default() -> Self { Self::new(0f32, 0f32, 0f32) }
+    fn default() -> Self {
+        Self::new(0f32, 0f32, 0f32)
+    }
 }
 
 impl PartialEq for Vec3 {
@@ -192,7 +242,9 @@ impl PartialEq for Vec3 {
 }
 
 impl From<FitVec3> for Vec3 {
-    fn from(vec: FitVec3) -> Self { Self::from_array(vec.arr) }
+    fn from(vec: FitVec3) -> Self {
+        Self::from_array(vec.arr)
+    }
 }
 
 impl Debug for Vec3 {
@@ -207,11 +259,15 @@ impl Debug for Vec3 {
 
 impl Index<usize> for Vec3 {
     type Output = f32;
-    fn index(&self, index: usize) -> &Self::Output { &self.arr[index] }
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.arr[index]
+    }
 }
 
 impl IndexMut<usize> for Vec3 {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output { &mut self.arr[index] }
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.arr[index]
+    }
 }
 
 op_binary_impl!(Vec3, Add, add, +, 0 1 2 3);
@@ -231,11 +287,15 @@ op_assign_scalar_impl!(Vec3, SubAssign, sub_assign, -=);
 op_assign_scalar_impl!(Vec3, MulAssign, mul_assign, *=);
 
 impl iter::Sum for Vec3 {
-    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self { iter.fold(Vec3::default(), |a, b| a + b) }
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        iter.fold(Vec3::default(), |a, b| a + b)
+    }
 }
 
 impl<'a> iter::Sum<&'a Vec3> for Vec3 {
-    fn sum<I: Iterator<Item = &'a Self>>(iter: I) -> Self { iter.fold(Vec3::default(), |a, b| a + b) }
+    fn sum<I: Iterator<Item = &'a Self>>(iter: I) -> Self {
+        iter.fold(Vec3::default(), |a, b| a + b)
+    }
 }
 
 /// Represent vector type but actually have only 3 elments unlike `Vec3`.
