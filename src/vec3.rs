@@ -1,4 +1,4 @@
-use crate::Vec4;
+use crate::{Radian, Vec4};
 use std::{
     convert::From,
     fmt::Debug,
@@ -248,7 +248,6 @@ impl Vec3 {
     /// Caclulate orthogonal to `nonzero_to` but connected to `self`,
     /// and sum of projected vector on `nonzero_to` can be itself.
     ///
-    ///
     /// # Examples
     ///
     /// ```
@@ -262,6 +261,69 @@ impl Vec3 {
     /// ```  
     pub fn uncheck_rejected_from(&self, nonzero_to: Vec3) -> Self {
         *self - self.uncheck_projected_on(nonzero_to)
+    }
+
+    /// Rotate vector about given `axis` [Vec3] with angle [Radian].
+    ///
+    /// `axis` [Vec3] vector should not be zero length.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Vec3, Radian, Degree, NearlyEqual};
+    ///
+    /// let vec = Vec3::new(3f32, 5f32, 0f32);
+    /// let axis = Vec3::unit_y();
+    ///
+    /// let rot90 = vec.uncheck_rotated_about_axis(axis, Degree(90f32).into());
+    /// assert!(rot90.x().nearly_equal(0f32, 1e-4));
+    /// assert!(rot90.y().nearly_equal(5f32, 1e-4));
+    /// assert!(rot90.z().nearly_equal(-3f32, 1e-4));
+    /// ```
+    pub fn uncheck_rotated_about_axis(&self, axis: Vec3, angle: Radian) -> Self {
+        let axis = axis.to_normalized().unwrap();
+        let cos = angle.cos();
+        let sin = angle.sin();
+        (*self * cos) + (axis * (self.dot(axis) * (1f32 - cos))) - (self.cross(axis) * sin)
+    }
+
+    /// Get reflected vector of `self` through non-zero vector [Vec3] `nonzero_vec`.
+    ///
+    /// `nonzero_vec` [Vec3] vector should not be zero length.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Vec3, NearlyEqual};
+    ///
+    /// let vec = Vec3::new(3f32, 4f32, 5f32);
+    /// let axis = Vec3::unit_x();
+    /// let reflected = vec.uncheck_reflected_through(axis);
+    /// assert_eq!(reflected, Vec3::new(-3f32, 4f32, 5f32));
+    /// ```
+    pub fn uncheck_reflected_through(&self, nonzero_vec: Vec3) -> Self {
+        self.uncheck_rejected_from(nonzero_vec) - self.uncheck_projected_on(nonzero_vec)
+    }
+
+    /// Get the involution of `self` [Vec3] through the vector `nonzero_vec`.
+    ///
+    /// `nonzero_vec` [Vec3] vector should not be zero length.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Vec3, NearlyEqual};
+    ///
+    /// let vec = Vec3::new(3f32, 4f32, 5f32);
+    /// let axis = Vec3::unit_x();
+    /// let involuted = vec.uncheck_involuted_through(axis);
+    /// assert_eq!(involuted, Vec3::new(3f32, -4f32, -5f32));
+    /// ```
+    pub fn uncheck_involuted_through(&self, nonzero_vec: Vec3) -> Self {
+        self.uncheck_projected_on(nonzero_vec) - self.uncheck_rejected_from(nonzero_vec)
     }
 
     /// Convert into [Vec4] as a homogeneous coordinate.
