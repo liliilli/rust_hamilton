@@ -208,6 +208,62 @@ impl Vec3 {
         Self::new(x, y, z)
     }
 
+    /// Do triple product with given `b` and `c`.
+    ///
+    /// This function can be helpful to calculate `up` vector from `forward` and `side`.<br>
+    /// Do not use that as a scalar triple product, scalar triple product is different to this.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec3;
+    ///
+    /// let forward = Vec3::new(1f32, 5f32, 4f32).to_normalized().unwrap();
+    /// let world_up = Vec3::unit_y();
+    /// let triple_product = forward.triple_product(forward, world_up) * -1f32;
+    /// ```
+    pub fn triple_product(&self, b: Self, c: Self) -> Self {
+        (b * self.dot(c)) - (c * self.dot(b))
+    }
+
+    /// Project self [Vec3] onto given nonzero vector `nonzero_to`.
+    /// `nonzero_to` should not be zeroed length.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec3;
+    ///
+    /// let a = Vec3::new(3f32, 5f32, 4f32);
+    /// let p = Vec3::new(2f32, 0f32, 2f32);
+    /// let a_on_p = a.uncheck_projected_on(p);
+    /// assert_eq!(a_on_p, Vec3::new(3.5f32, 0f32, 3.5f32));
+    /// ```
+    pub fn uncheck_projected_on(&self, nonzero_to: Vec3) -> Self {
+        nonzero_to * (self.dot(nonzero_to) * nonzero_to.square_length().recip())
+    }
+
+    /// Caclulate orthogonal to `nonzero_to` but connected to `self`,
+    /// and sum of projected vector on `nonzero_to` can be itself.
+    ///
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec3;
+    ///
+    /// let a = Vec3::new(3f32, 5f32, 4f32);
+    /// let p = Vec3::new(1f32, 0f32, 0f32);
+    /// let a_from_a_on_p = a.uncheck_rejected_from(p);
+    /// assert_eq!(a_from_a_on_p, Vec3::new(0f32, 5f32, 4f32));
+    /// ```  
+    pub fn uncheck_rejected_from(&self, nonzero_to: Vec3) -> Self {
+        *self - self.uncheck_projected_on(nonzero_to)
+    }
+
     /// Convert into [Vec4] as a homogeneous coordinate.
     ///
     /// See [https://en.wikipedia.org/wiki/Homogeneous_coordinates]
@@ -271,7 +327,7 @@ impl IndexMut<usize> for Vec3 {
 }
 
 op_binary_impl!(Vec3, Add, add, +, 0 1 2 3);
-op_binary_impl!(Vec3, Sub, sub, +, 0 1 2 3);
+op_binary_impl!(Vec3, Sub, sub, -, 0 1 2 3);
 op_binary_impl!(Vec3, Mul, mul, *, 0 1 2 3);
 
 op_scalar_impl!(Vec3, Add, add, +);
