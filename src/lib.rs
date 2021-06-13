@@ -2,7 +2,7 @@
 mod internal_macro;
 
 pub mod angle;
-//pub mod bounds;
+pub mod bounds;
 pub mod error;
 pub mod extent;
 pub mod index;
@@ -19,6 +19,7 @@ pub mod vec4;
 pub mod wrappable;
 
 pub use angle::{Degree, Radian};
+pub use bounds::Bounds2;
 pub use error::EError;
 pub use extent::{Extent2, Extent3, IExtent2, IExtent3};
 pub use index::Index2;
