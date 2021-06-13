@@ -1,4 +1,4 @@
-use crate::EError;
+use crate::{EError, Vec3, Vec4};
 use std::{
     fmt::Debug,
     iter,
@@ -362,6 +362,54 @@ impl Vec2 {
     pub fn involuted_through(&self, rhs: Vec2) -> Result<Self, EError> {
         Ok(self.projected_on(rhs)? - self.rejected_from(rhs)?)
     }
+
+    /// Get new [Vec2] contains each minimum elements of `self` and given `points` [Vec2] list.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec2;
+    ///
+    /// let vec = Vec2::from_scalar(0f32);
+    /// let new = vec.min_elements_with(&[
+    ///     Vec2::new(0f32, -3f32),
+    ///     Vec2::new(1f32, 2f32),
+    ///     Vec2::new(-16f32, 8f32)]);
+    /// assert_eq!(new, Vec2::new(-16f32, -3f32));
+    ///
+    /// let same = new.min_elements_with(&[]);
+    /// assert_eq!(new, same);
+    /// ```
+    pub fn min_elements_with(&self, points: &[Self]) -> Self {
+        points.iter().fold(*self, |prev, point| {
+            Self::new(point[0].min(prev[0]), point[1].min(prev[1]))
+        })
+    }
+
+    /// Get new [Vec2] contains each maximum elements of `self` and given `points` [Vec2] list.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::Vec2;
+    ///
+    /// let vec = Vec2::from_scalar(0f32);
+    /// let new = vec.max_elements_with(&[
+    ///     Vec2::new(0f32, -3f32),
+    ///     Vec2::new(1f32, 2f32),
+    ///     Vec2::new(-16f32, 8f32)]);
+    /// assert_eq!(new, Vec2::new(1f32, 8f32));
+    ///
+    /// let same = new.max_elements_with(&[]);
+    /// assert_eq!(new, same);
+    /// ```
+    pub fn max_elements_with(&self, points: &[Self]) -> Self {
+        points.iter().fold(*self, |prev, point| {
+            Self::new(point[0].max(prev[0]), point[1].max(prev[1]))
+        })
+    }
 }
 
 impl Default for Vec2 {
@@ -415,5 +463,373 @@ impl iter::Sum for Vec2 {
 impl<'a> iter::Sum<&'a Vec2> for Vec2 {
     fn sum<I: Iterator<Item = &'a Self>>(iter: I) -> Self {
         iter.fold(Vec2::default(), |a, b| a + b)
+    }
+}
+
+// ----------------------------------------------------------------------------
+//
+// VEC2 SWIZZLINGS
+//
+// ----------------------------------------------------------------------------
+
+impl Vec2 {
+    pub fn swizzle_00(&self) -> Self {
+        Self::new(0f32, 0f32)
+    }
+    pub fn swizzle_0x(&self) -> Self {
+        Self::new(0f32, self.x())
+    }
+    pub fn swizzle_0y(&self) -> Self {
+        Self::new(0f32, self.y())
+    }
+    pub fn swizzle_x0(&self) -> Self {
+        Self::new(self.x(), 0f32)
+    }
+    pub fn swizzle_xx(&self) -> Self {
+        Self::new(self.x(), self.x())
+    }
+    pub fn swizzle_xy(&self) -> Self {
+        Self::new(self.x(), self.y())
+    }
+    pub fn swizzle_y0(&self) -> Self {
+        Self::new(self.y(), 0f32)
+    }
+    pub fn swizzle_yx(&self) -> Self {
+        Self::new(self.y(), self.x())
+    }
+    pub fn swizzle_yy(&self) -> Self {
+        Self::new(self.y(), self.y())
+    }
+}
+
+impl Vec2 {
+    pub fn swizzle_000(&self) -> Vec3 {
+        Vec3::from_scalar(0f32)
+    }
+    pub fn swizzle_00x(&self) -> Vec3 {
+        Vec3::new(0f32, 0f32, self.x())
+    }
+    pub fn swizzle_00y(&self) -> Vec3 {
+        Vec3::new(0f32, 0f32, self.y())
+    }
+    pub fn swizzle_0x0(&self) -> Vec3 {
+        Vec3::new(0f32, self.x(), 0f32)
+    }
+    pub fn swizzle_0xx(&self) -> Vec3 {
+        Vec3::new(0f32, self.x(), self.x())
+    }
+    pub fn swizzle_0xy(&self) -> Vec3 {
+        Vec3::new(0f32, self.x(), self.y())
+    }
+    pub fn swizzle_0y0(&self) -> Vec3 {
+        Vec3::new(0f32, self.y(), 0f32)
+    }
+    pub fn swizzle_0yx(&self) -> Vec3 {
+        Vec3::new(0f32, self.y(), self.x())
+    }
+    pub fn swizzle_0yy(&self) -> Vec3 {
+        Vec3::new(0f32, self.y(), self.y())
+    }
+    pub fn swizzle_x00(&self) -> Vec3 {
+        Vec3::new(self.x(), 0f32, 0f32)
+    }
+    pub fn swizzle_x0x(&self) -> Vec3 {
+        Vec3::new(self.x(), 0f32, self.x())
+    }
+    pub fn swizzle_x0y(&self) -> Vec3 {
+        Vec3::new(self.x(), 0f32, self.y())
+    }
+    pub fn swizzle_xx0(&self) -> Vec3 {
+        Vec3::new(self.x(), self.x(), 0f32)
+    }
+    pub fn swizzle_xxx(&self) -> Vec3 {
+        Vec3::new(self.x(), self.x(), self.x())
+    }
+    pub fn swizzle_xxy(&self) -> Vec3 {
+        Vec3::new(self.x(), self.x(), self.y())
+    }
+    pub fn swizzle_xy0(&self) -> Vec3 {
+        Vec3::new(self.x(), self.y(), 0f32)
+    }
+    pub fn swizzle_xyx(&self) -> Vec3 {
+        Vec3::new(self.x(), self.y(), self.x())
+    }
+    pub fn swizzle_xyy(&self) -> Vec3 {
+        Vec3::new(self.x(), self.y(), self.y())
+    }
+    pub fn swizzle_y00(&self) -> Vec3 {
+        Vec3::new(self.y(), 0f32, 0f32)
+    }
+    pub fn swizzle_y0x(&self) -> Vec3 {
+        Vec3::new(self.y(), 0f32, self.x())
+    }
+    pub fn swizzle_y0y(&self) -> Vec3 {
+        Vec3::new(self.y(), 0f32, self.y())
+    }
+    pub fn swizzle_yx0(&self) -> Vec3 {
+        Vec3::new(self.y(), self.x(), 0f32)
+    }
+    pub fn swizzle_yxx(&self) -> Vec3 {
+        Vec3::new(self.y(), self.x(), self.x())
+    }
+    pub fn swizzle_yxy(&self) -> Vec3 {
+        Vec3::new(self.y(), self.x(), self.y())
+    }
+    pub fn swizzle_yy0(&self) -> Vec3 {
+        Vec3::new(self.y(), self.y(), 0f32)
+    }
+    pub fn swizzle_yyx(&self) -> Vec3 {
+        Vec3::new(self.y(), self.y(), self.x())
+    }
+    pub fn swizzle_yyy(&self) -> Vec3 {
+        Vec3::new(self.y(), self.y(), self.y())
+    }
+}
+
+impl Vec2 {
+    pub fn swizzle_0000(&self) -> Vec4 {
+        Vec4::from_scalar(0f32)
+    }
+    pub fn swizzle_000x(&self) -> Vec4 {
+        Vec4::new(0f32, 0f32, 0f32, self.x())
+    }
+    pub fn swizzle_000y(&self) -> Vec4 {
+        Vec4::new(0f32, 0f32, 0f32, self.y())
+    }
+    pub fn swizzle_00x0(&self) -> Vec4 {
+        Vec4::new(0f32, 0f32, self.x(), 0f32)
+    }
+    pub fn swizzle_00xx(&self) -> Vec4 {
+        Vec4::new(0f32, 0f32, self.x(), self.x())
+    }
+    pub fn swizzle_00xy(&self) -> Vec4 {
+        Vec4::new(0f32, 0f32, self.x(), self.y())
+    }
+    pub fn swizzle_00y0(&self) -> Vec4 {
+        Vec4::new(0f32, 0f32, self.y(), 0f32)
+    }
+    pub fn swizzle_00yx(&self) -> Vec4 {
+        Vec4::new(0f32, 0f32, self.y(), self.x())
+    }
+    pub fn swizzle_00yy(&self) -> Vec4 {
+        Vec4::new(0f32, 0f32, self.y(), self.y())
+    }
+    pub fn swizzle_0x00(&self) -> Vec4 {
+        Vec4::new(0f32, self.x(), 0f32, 0f32)
+    }
+    pub fn swizzle_0x0x(&self) -> Vec4 {
+        Vec4::new(0f32, self.x(), 0f32, self.x())
+    }
+    pub fn swizzle_0x0y(&self) -> Vec4 {
+        Vec4::new(0f32, self.x(), 0f32, self.y())
+    }
+    pub fn swizzle_0xx0(&self) -> Vec4 {
+        Vec4::new(0f32, self.x(), self.x(), 0f32)
+    }
+    pub fn swizzle_0xxx(&self) -> Vec4 {
+        Vec4::new(0f32, self.x(), self.x(), self.x())
+    }
+    pub fn swizzle_0xxy(&self) -> Vec4 {
+        Vec4::new(0f32, self.x(), self.x(), self.y())
+    }
+    pub fn swizzle_0xy0(&self) -> Vec4 {
+        Vec4::new(0f32, self.x(), self.y(), 0f32)
+    }
+    pub fn swizzle_0xyx(&self) -> Vec4 {
+        Vec4::new(0f32, self.x(), self.y(), self.x())
+    }
+    pub fn swizzle_0xyy(&self) -> Vec4 {
+        Vec4::new(0f32, self.x(), self.y(), self.y())
+    }
+    pub fn swizzle_0y00(&self) -> Vec4 {
+        Vec4::new(0f32, self.y(), 0f32, 0f32)
+    }
+    pub fn swizzle_0y0x(&self) -> Vec4 {
+        Vec4::new(0f32, self.y(), 0f32, self.x())
+    }
+    pub fn swizzle_0y0y(&self) -> Vec4 {
+        Vec4::new(0f32, self.y(), 0f32, self.y())
+    }
+    pub fn swizzle_0yx0(&self) -> Vec4 {
+        Vec4::new(0f32, self.y(), self.x(), 0f32)
+    }
+    pub fn swizzle_0yxx(&self) -> Vec4 {
+        Vec4::new(0f32, self.y(), self.x(), self.x())
+    }
+    pub fn swizzle_0yxy(&self) -> Vec4 {
+        Vec4::new(0f32, self.y(), self.x(), self.y())
+    }
+    pub fn swizzle_0yy0(&self) -> Vec4 {
+        Vec4::new(0f32, self.y(), self.y(), 0f32)
+    }
+    pub fn swizzle_0yyx(&self) -> Vec4 {
+        Vec4::new(0f32, self.y(), self.y(), self.x())
+    }
+    pub fn swizzle_0yyy(&self) -> Vec4 {
+        Vec4::new(0f32, self.y(), self.y(), self.y())
+    }
+
+    pub fn swizzle_x000(&self) -> Vec4 {
+        Vec4::new(self.x(), 0f32, 0f32, 0f32)
+    }
+    pub fn swizzle_x00x(&self) -> Vec4 {
+        Vec4::new(self.x(), 0f32, 0f32, self.x())
+    }
+    pub fn swizzle_x00y(&self) -> Vec4 {
+        Vec4::new(self.x(), 0f32, 0f32, self.y())
+    }
+    pub fn swizzle_x0x0(&self) -> Vec4 {
+        Vec4::new(self.x(), 0f32, self.x(), 0f32)
+    }
+    pub fn swizzle_x0xx(&self) -> Vec4 {
+        Vec4::new(self.x(), 0f32, self.x(), self.x())
+    }
+    pub fn swizzle_x0xy(&self) -> Vec4 {
+        Vec4::new(self.x(), 0f32, self.x(), self.y())
+    }
+    pub fn swizzle_x0y0(&self) -> Vec4 {
+        Vec4::new(self.x(), 0f32, self.y(), 0f32)
+    }
+    pub fn swizzle_x0yx(&self) -> Vec4 {
+        Vec4::new(self.x(), 0f32, self.y(), self.x())
+    }
+    pub fn swizzle_x0yy(&self) -> Vec4 {
+        Vec4::new(self.x(), 0f32, self.y(), self.y())
+    }
+    pub fn swizzle_xx00(&self) -> Vec4 {
+        Vec4::new(self.x(), self.x(), 0f32, 0f32)
+    }
+    pub fn swizzle_xx0x(&self) -> Vec4 {
+        Vec4::new(self.x(), self.x(), 0f32, self.x())
+    }
+    pub fn swizzle_xx0y(&self) -> Vec4 {
+        Vec4::new(self.x(), self.x(), 0f32, self.y())
+    }
+    pub fn swizzle_xxx0(&self) -> Vec4 {
+        Vec4::new(self.x(), self.x(), self.x(), 0f32)
+    }
+    pub fn swizzle_xxxx(&self) -> Vec4 {
+        Vec4::new(self.x(), self.x(), self.x(), self.x())
+    }
+    pub fn swizzle_xxxy(&self) -> Vec4 {
+        Vec4::new(self.x(), self.x(), self.x(), self.y())
+    }
+    pub fn swizzle_xxy0(&self) -> Vec4 {
+        Vec4::new(self.x(), self.x(), self.y(), 0f32)
+    }
+    pub fn swizzle_xxyx(&self) -> Vec4 {
+        Vec4::new(self.x(), self.x(), self.y(), self.x())
+    }
+    pub fn swizzle_xxyy(&self) -> Vec4 {
+        Vec4::new(self.x(), self.x(), self.y(), self.y())
+    }
+    pub fn swizzle_xy00(&self) -> Vec4 {
+        Vec4::new(self.x(), self.y(), 0f32, 0f32)
+    }
+    pub fn swizzle_xy0x(&self) -> Vec4 {
+        Vec4::new(self.x(), self.y(), 0f32, self.x())
+    }
+    pub fn swizzle_xy0y(&self) -> Vec4 {
+        Vec4::new(self.x(), self.y(), 0f32, self.y())
+    }
+    pub fn swizzle_xyx0(&self) -> Vec4 {
+        Vec4::new(self.x(), self.y(), self.x(), 0f32)
+    }
+    pub fn swizzle_xyxx(&self) -> Vec4 {
+        Vec4::new(self.x(), self.y(), self.x(), self.x())
+    }
+    pub fn swizzle_xyxy(&self) -> Vec4 {
+        Vec4::new(self.x(), self.y(), self.x(), self.y())
+    }
+    pub fn swizzle_xyy0(&self) -> Vec4 {
+        Vec4::new(self.x(), self.y(), self.y(), 0f32)
+    }
+    pub fn swizzle_xyyx(&self) -> Vec4 {
+        Vec4::new(self.x(), self.y(), self.y(), self.x())
+    }
+    pub fn swizzle_xyyy(&self) -> Vec4 {
+        Vec4::new(self.x(), self.y(), self.y(), self.y())
+    }
+
+    pub fn swizzle_y000(&self) -> Vec4 {
+        Vec4::new(self.y(), 0f32, 0f32, 0f32)
+    }
+    pub fn swizzle_y00x(&self) -> Vec4 {
+        Vec4::new(self.y(), 0f32, 0f32, self.x())
+    }
+    pub fn swizzle_y00y(&self) -> Vec4 {
+        Vec4::new(self.y(), 0f32, 0f32, self.y())
+    }
+    pub fn swizzle_y0x0(&self) -> Vec4 {
+        Vec4::new(self.y(), 0f32, self.x(), 0f32)
+    }
+    pub fn swizzle_y0xx(&self) -> Vec4 {
+        Vec4::new(self.y(), 0f32, self.x(), self.x())
+    }
+    pub fn swizzle_y0xy(&self) -> Vec4 {
+        Vec4::new(self.y(), 0f32, self.x(), self.y())
+    }
+    pub fn swizzle_y0y0(&self) -> Vec4 {
+        Vec4::new(self.y(), 0f32, self.y(), 0f32)
+    }
+    pub fn swizzle_y0yx(&self) -> Vec4 {
+        Vec4::new(self.y(), 0f32, self.y(), self.x())
+    }
+    pub fn swizzle_y0yy(&self) -> Vec4 {
+        Vec4::new(self.y(), 0f32, self.y(), self.y())
+    }
+    pub fn swizzle_yx00(&self) -> Vec4 {
+        Vec4::new(self.y(), self.x(), 0f32, 0f32)
+    }
+    pub fn swizzle_yx0x(&self) -> Vec4 {
+        Vec4::new(self.y(), self.x(), 0f32, self.x())
+    }
+    pub fn swizzle_yx0y(&self) -> Vec4 {
+        Vec4::new(self.y(), self.x(), 0f32, self.y())
+    }
+    pub fn swizzle_yxx0(&self) -> Vec4 {
+        Vec4::new(self.y(), self.x(), self.x(), 0f32)
+    }
+    pub fn swizzle_yxxx(&self) -> Vec4 {
+        Vec4::new(self.y(), self.x(), self.x(), self.x())
+    }
+    pub fn swizzle_yxxy(&self) -> Vec4 {
+        Vec4::new(self.y(), self.x(), self.x(), self.y())
+    }
+    pub fn swizzle_yxy0(&self) -> Vec4 {
+        Vec4::new(self.y(), self.x(), self.y(), 0f32)
+    }
+    pub fn swizzle_yxyx(&self) -> Vec4 {
+        Vec4::new(self.y(), self.x(), self.y(), self.x())
+    }
+    pub fn swizzle_yxyy(&self) -> Vec4 {
+        Vec4::new(self.y(), self.x(), self.y(), self.y())
+    }
+    pub fn swizzle_yy00(&self) -> Vec4 {
+        Vec4::new(self.y(), self.y(), 0f32, 0f32)
+    }
+    pub fn swizzle_yy0x(&self) -> Vec4 {
+        Vec4::new(self.y(), self.y(), 0f32, self.x())
+    }
+    pub fn swizzle_yy0y(&self) -> Vec4 {
+        Vec4::new(self.y(), self.y(), 0f32, self.y())
+    }
+    pub fn swizzle_yyx0(&self) -> Vec4 {
+        Vec4::new(self.y(), self.y(), self.x(), 0f32)
+    }
+    pub fn swizzle_yyxx(&self) -> Vec4 {
+        Vec4::new(self.y(), self.y(), self.x(), self.x())
+    }
+    pub fn swizzle_yyxy(&self) -> Vec4 {
+        Vec4::new(self.y(), self.y(), self.x(), self.y())
+    }
+    pub fn swizzle_yyy0(&self) -> Vec4 {
+        Vec4::new(self.y(), self.y(), self.y(), 0f32)
+    }
+    pub fn swizzle_yyyx(&self) -> Vec4 {
+        Vec4::new(self.y(), self.y(), self.y(), self.x())
+    }
+    pub fn swizzle_yyyy(&self) -> Vec4 {
+        Vec4::new(self.y(), self.y(), self.y(), self.y())
     }
 }
