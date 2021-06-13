@@ -1,4 +1,4 @@
-use crate::{EError, Radian, Ray, Vec4};
+use crate::{EError, Quat, Radian, Ray, Vec4};
 use std::{
     convert::From,
     fmt::Debug,
@@ -519,6 +519,33 @@ impl Vec3 {
     /// ```
     pub fn to_homogeneous(&self) -> Vec4 {
         Vec4::new(self.arr[0], self.arr[1], self.arr[2], 1f32)
+    }
+
+    /// Rotate this [Vec3] about [Quat] which has rotation data.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Vec3, Quat, Degree, NearlyEqual};
+    ///
+    /// let quat = Quat::from_degrees(Degree(0f32), Degree(45f32), Degree(0f32));
+    /// let src = Vec3::new(0f32, 0f32, 2f32);
+    /// let dst = src.rotated_about_quat(quat);
+    ///
+    /// assert!(dst.x().nearly_equal(2f32.sqrt(), 1e-3));
+    /// assert!(dst.y().nearly_equal(0f32, 1e-3));
+    /// assert!(dst.z().nearly_equal(2f32.sqrt(), 1e-3));
+    /// ```
+    pub fn rotated_about_quat(&self, quat: Quat) -> Self {
+        let w = quat.w();
+        let vecpart = Self::new(quat.x(), quat.y(), quat.z());
+        let b2 = vecpart.square_length();
+
+        // Result
+        (self * ((w * w) - b2))
+            + (vecpart * (self.dot(vecpart) * 2f32))
+            + (vecpart.cross(*self) * (w * 2f32))
     }
 }
 

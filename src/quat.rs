@@ -53,13 +53,19 @@ impl Rotation {
     }
 
     /// Get roll value as [Degree] unit.
-    pub fn roll_degree(&self) -> Degree { self.roll.into() }
+    pub fn roll_degree(&self) -> Degree {
+        self.roll.into()
+    }
 
     /// Get yaw value as [Degree] unit.
-    pub fn yaw_degree(&self) -> Degree { self.yaw.into() }
+    pub fn yaw_degree(&self) -> Degree {
+        self.yaw.into()
+    }
 
     /// Get pitch value as [Degree] unit.
-    pub fn pitch_degree(&self) -> Degree { self.pitch.into() }
+    pub fn pitch_degree(&self) -> Degree {
+        self.pitch.into()
+    }
 
     /// Normalize rotation values into `[-PI, PI)` in [Radian] unit.
     ///
@@ -86,20 +92,26 @@ impl Rotation {
         }
     }
 
+    /// Get trigonometric `sin` function applicated values.
     ///
-    ///
-    ///
-    pub fn sin(self) -> (f32, f32, f32) { (self.roll.sin(), self.yaw.sin(), self.pitch.sin()) }
+    /// Returned each values represents `Roll`, `Yaw` and `Pitch`.
+    pub fn sin(self) -> (f32, f32, f32) {
+        (self.roll.sin(), self.yaw.sin(), self.pitch.sin())
+    }
 
+    /// Get trigonometric `cos` function applicated values.
     ///
-    ///
-    ///
-    pub fn cos(self) -> (f32, f32, f32) { (self.roll.cos(), self.yaw.cos(), self.pitch.cos()) }
+    /// Returned each values represents `Roll`, `Yaw` and `Pitch`.
+    pub fn cos(self) -> (f32, f32, f32) {
+        (self.roll.cos(), self.yaw.cos(), self.pitch.cos())
+    }
 
+    /// Get trigonometric `tan` function applicated values.
     ///
-    ///
-    ///
-    pub fn tan(self) -> (f32, f32, f32) { (self.roll.tan(), self.yaw.tan(), self.pitch.tan()) }
+    /// Returned each values represents `Roll`, `Yaw` and `Pitch`.
+    pub fn tan(self) -> (f32, f32, f32) {
+        (self.roll.tan(), self.yaw.tan(), self.pitch.tan())
+    }
 }
 
 impl NearlyEqual for Rotation {
@@ -149,42 +161,78 @@ pub struct Quat {
 }
 
 impl Quat {
+    /// Create [Quat] from three [Degree] euler angle values.
     ///
+    /// # Examples
     ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Degree, Rotation, Quat};
     ///
+    /// let quat = Quat::from_degrees(Degree(30f32), Degree(0f32), Degree(45f32));
+    /// ```
     pub fn from_degrees(roll: Degree, yaw: Degree, pitch: Degree) -> Self {
         Rotation::from_degrees(roll, yaw, pitch).into()
     }
 
+    /// Create [Quat] from three [Radian] euler angle values.
     ///
+    /// # Examples
     ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Degree, Radian, Rotation, Quat};
     ///
-    pub fn from_radians(roll: Radian, yaw: Radian, pitch: Radian) -> Self { Rotation { roll, yaw, pitch }.into() }
+    /// let quat = Quat::from_radians(Degree(30f32).into(), Radian(0f32), Degree(45f32).into());
+    /// ```
+    pub fn from_radians(roll: Radian, yaw: Radian, pitch: Radian) -> Self {
+        Rotation { roll, yaw, pitch }.into()
+    }
 
     /// Return `x` value of quaternion.
-    pub fn x(&self) -> f32 { self.x }
+    pub fn x(&self) -> f32 {
+        self.x
+    }
     /// Return `y` value of quaternion.
-    pub fn y(&self) -> f32 { self.y }
+    pub fn y(&self) -> f32 {
+        self.y
+    }
     /// Return `z` value of quaternion.
-    pub fn z(&self) -> f32 { self.z }
+    pub fn z(&self) -> f32 {
+        self.z
+    }
     /// Return `w` value of quaternion.
-    pub fn w(&self) -> f32 { self.w }
+    pub fn w(&self) -> f32 {
+        self.w
+    }
 
+    /// Multiplicate with another [Quat].
     ///
+    /// # Examples
     ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Degree, Rotation, Quat};
     ///
+    /// let lhs = Quat::from_degrees(Degree(30f32), Degree(0f32), Degree(45f32));
+    /// let rhs = Quat::from_degrees(Degree(-30f32), Degree(45f32), Degree(-135f32));
+    /// let multiplied = lhs.mul(rhs);
+    ///
+    /// let target = Quat::from_degrees(Degree(0f32), Degree(45f32), Degree(-90f32));
+    /// assert_ne!(multiplied, target);
+    /// ```
     pub fn mul(&self, rhs: Self) -> Self {
         Self {
-            x: (self.w * rhs.x) + (self.x * rhs.w) + (self.y * rhs.z) - (self.z * rhs.y),
-            y: (self.w * rhs.y) + (self.y * rhs.w) + (self.z * rhs.x) - (self.x * rhs.z),
-            z: (self.w * rhs.z) + (self.z * rhs.w) + (self.x * rhs.y) - (self.y * rhs.x),
+            x: (self.x * rhs.w) + (self.w * rhs.x) + (self.y * rhs.z) - (self.z * rhs.y),
+            y: (self.y * rhs.w) + (self.z * rhs.x) + (self.w * rhs.y) - (self.x * rhs.z),
+            z: (self.z * rhs.w) + (self.w * rhs.z) + (self.x * rhs.y) - (self.y * rhs.x),
             w: (self.w * rhs.w) - (self.x * rhs.x) - (self.y * rhs.y) - (self.z * rhs.z),
         }
     }
 
+    /// Invert [Quat].
     ///
-    ///
-    ///
+    /// Inverted unit quaternion is same to conjugated quaternion.
     pub fn to_inverted(&self) -> Self {
         let original: Vec4 = self.into();
         let conjugated: Vec4 = original * Vec4::new(-1f32, -1f32, -1f32, 1f32);
@@ -240,9 +288,13 @@ impl From<&Rotation> for Quat {
 }
 
 impl From<Quat> for Vec4 {
-    fn from(quat: Quat) -> Self { Self::new(quat.x, quat.y, quat.z, quat.w) }
+    fn from(quat: Quat) -> Self {
+        Self::new(quat.x, quat.y, quat.z, quat.w)
+    }
 }
 
 impl From<&Quat> for Vec4 {
-    fn from(quat: &Quat) -> Self { Self::new(quat.x, quat.y, quat.z, quat.w) }
+    fn from(quat: &Quat) -> Self {
+        Self::new(quat.x, quat.y, quat.z, quat.w)
+    }
 }
