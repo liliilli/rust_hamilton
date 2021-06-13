@@ -8,7 +8,7 @@ use crate::{EError, Vec3};
 /// use hamilton as math;
 /// use math::{Ray, Vec3};
 ///
-/// let ray = Ray::unsafe_new(Vec3::from_scalar(0f32), Vec3::new(1f32, 0f32, 0f32));
+/// let ray = Ray::uncheck_new(Vec3::from_scalar(0f32), Vec3::new(1f32, 0f32, 0f32));
 /// assert_eq!(ray.origin, Vec3::from_scalar(0f32));
 /// assert_eq!(ray.to_proceeded(10f32).origin, Vec3::new(10f32, 0f32, 0f32));
 /// ```
@@ -72,7 +72,7 @@ impl Ray {
     /// use hamilton as math;
     /// use math::{Ray, Vec3, NearlyEqual};
     ///
-    /// let ray = Ray::unsafe_new(Vec3::from_scalar(0f32), Vec3::new(3f32, 4f32, 5f32));
+    /// let ray = Ray::uncheck_new(Vec3::from_scalar(0f32), Vec3::new(3f32, 4f32, 5f32));
     /// let proceeded_origin = ray.to_proceeded(50f32.sqrt()).origin;
     /// assert!(proceeded_origin.x().nearly_equal(3f32, 1e-4));
     /// assert!(proceeded_origin.y().nearly_equal(4f32, 1e-4));
