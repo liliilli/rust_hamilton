@@ -1,4 +1,4 @@
-use crate::{EError, Radian, Vec4};
+use crate::{EError, Radian, Ray, Vec4};
 use std::{
     convert::From,
     fmt::Debug,
@@ -481,6 +481,25 @@ impl Vec3 {
     /// ```
     pub fn involuted_through(&self, rhs: Vec3) -> Result<Self, EError> {
         Ok(self.projected_on(rhs)? - self.rejected_from(rhs)?)
+    }
+
+    /// Get the shortest distance from `self` [Vec3] to ray [Ray].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Vec3, Ray};
+    ///
+    /// let vec = Vec3::new(3f32, 4f32, 5f32);
+    /// let ray = Ray::new(Vec3::from_scalar(1f32), Vec3::new(0.5f32, 0f32, 0f32)).unwrap();
+    /// let dist = vec.shortest_distance_to(ray);
+    /// assert_eq!(dist, ((9 + 16) as f32).sqrt());
+    /// ```
+    pub fn shortest_distance_to(&self, ray: Ray) -> f32 {
+        let u = *self - ray.origin;
+        let squared = u.cross(ray.direction()).square_length(); // Supposed to be positive.
+        squared.sqrt()
     }
 
     /// Convert into [Vec4] as a homogeneous coordinate.
