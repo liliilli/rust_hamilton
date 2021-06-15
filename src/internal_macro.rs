@@ -5,21 +5,27 @@ macro_rules! forward_ref_binop {
             type Output = <$t as $imp<$u>>::Output;
 
             #[inline]
-            fn $method(self, other: $u) -> <$t as $imp<$u>>::Output { $imp::$method(*self, other) }
+            fn $method(self, other: $u) -> <$t as $imp<$u>>::Output {
+                $imp::$method(*self, other)
+            }
         }
 
         impl $imp<&$u> for $t {
             type Output = <$t as $imp<$u>>::Output;
 
             #[inline]
-            fn $method(self, other: &$u) -> <$t as $imp<$u>>::Output { $imp::$method(self, *other) }
+            fn $method(self, other: &$u) -> <$t as $imp<$u>>::Output {
+                $imp::$method(self, *other)
+            }
         }
 
         impl $imp<&$u> for &$t {
             type Output = <$t as $imp<$u>>::Output;
 
             #[inline]
-            fn $method(self, other: &$u) -> <$t as $imp<$u>>::Output { $imp::$method(*self, *other) }
+            fn $method(self, other: &$u) -> <$t as $imp<$u>>::Output {
+                $imp::$method(*self, *other)
+            }
         }
     };
 }
@@ -30,7 +36,9 @@ macro_rules! forward_ref_assign {
     (impl $imp:ident, $method:ident for $t:ty, $u:ty) => {
         impl $imp<&$u> for $t {
             #[inline]
-            fn $method(&mut self, other: &$u) { $imp::$method(self, *other); }
+            fn $method(&mut self, other: &$u) {
+                $imp::$method(self, *other);
+            }
         }
     };
 }
@@ -76,6 +84,21 @@ macro_rules! op_scalar_impl_common {
             fn $method(self, s: f32) -> <$t as $imp<f32>>::Output { $imp::$method(*self, s) }
         }
     };
+    ($t:ty, $imp:ident, $method:ident, $v: tt, $u: ty) => {
+        impl $imp<$u> for $t {
+            type Output = $t;
+
+            #[inline]
+            fn $method(self, s: $u) -> Self::Output { self $v <$t>::from_scalar(s as _) }
+        }
+
+        impl<'a> $imp<$u> for &'a $t {
+            type Output = <$t as $imp<$u>>::Output;
+
+            #[inline]
+            fn $method(self, s: $u) -> <$t as $imp<$u>>::Output { $imp::$method(*self, s as $u) }
+        }
+    };
 }
 
 ///
@@ -83,9 +106,16 @@ macro_rules! op_scalar_impl {
     ($t:ty, $imp:ident, $method:ident, $v: tt) => {
         op_scalar_impl_common! {$t, $imp, $method, $v}
     };
+    ($t:ty, $imp:ident, $method:ident, $v: tt, $u: ty) => {
+        op_scalar_impl_common! {$t, $imp, $method, $v, $u}
+    };
     ($t:ty, Mul, mul, *) => {
         op_scalar_impl_common! {$t, $imp, $method, *}
         forward_ref_binop! { impl Mul, mul for $t, f32 }
+    };
+    ($t:ty, Mul, mul, *, $u: ty) => {
+        op_scalar_impl_common! {$t, $imp, $method, *, $u}
+        forward_ref_binop! { impl Mul, mul for $t, $u }
     };
 }
 
@@ -119,6 +149,22 @@ macro_rules! op_assign_scalar_impl {
             }
         }
     };
+    ($t:ty, $imp:ident, $method:ident, $v: tt, $u: ty) => {
+        impl $imp<$u> for $t {
+            #[inline]
+            fn $method(&mut self, s: $u) {
+                 *self $v <$t>::from_scalar(s)
+            }
+        }
+
+        impl $imp<&$u> for $t {
+            #[inline]
+            fn $method(&mut self, s: &$u) {
+                 *self $v <$t>::from_scalar(*s)
+            }
+        }
+    };
+
 }
 
 // ************************************************************************************************
@@ -173,6 +219,17 @@ macro_rules! op_angle_assign_impl {
 
         forward_ref_assign!{impl $imp, $method for $t, $t}
     };
+    ($t:ty, $imp:ident, $method:ident, $v: tt, $u: ty) => {
+        impl $imp for $t {
+            #[inline]
+            fn $method(&mut self, rhs: $t) {
+                self.0 $v rhs.0;
+            }
+        }
+
+        forward_ref_assign!{impl $imp, $method for $t, $t}
+    };
+
 }
 
 macro_rules! op_angle_assign_scalar_impl {
