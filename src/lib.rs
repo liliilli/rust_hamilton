@@ -21,7 +21,7 @@ pub mod vec4;
 pub mod wrappable;
 
 pub use angle::{Degree, Radian};
-pub use bounds::{Bounds2, IBounds2};
+pub use bounds::{Bounds2, Bounds3, IBounds2, IBounds3};
 pub use error::EError;
 pub use extent::{Extent2, Extent3, IExtent2, IExtent3};
 pub use index::Index2;
