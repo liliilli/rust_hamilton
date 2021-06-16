@@ -1,4 +1,4 @@
-use crate::{EError, Quat, Radian, Ray, Vec2, Vec4};
+use crate::{EError, Plane, Quat, Radian, Ray, Vec2, Vec4};
 use std::{
     convert::From,
     fmt::Debug,
@@ -433,6 +433,23 @@ impl Vec3 {
     /// ```
     pub fn reflected_through(&self, rhs: Vec3) -> Result<Self, EError> {
         Ok(self.rejected_from(rhs)? - self.projected_on(rhs)?)
+    }
+
+    /// Get reflected vector of this [Vec3] through given plane [Plane].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Vec3, Plane};
+    ///
+    /// let plane = Plane::new(Vec3::unit_y(), -8f32).unwrap();
+    /// let vec = Vec3::new(4f32, 16f32, 7f32);
+    /// let reflected = vec.reflected_through_plane(plane);
+    /// assert_eq!(reflected, Vec3::new(4f32, 0f32, 7f32));
+    /// ```
+    pub fn reflected_through_plane(&self, plane: Plane) -> Self {
+        self - (plane.normal() * (2f32 * (plane.dot(*self) + plane.d())))
     }
 
     /// Get the involution of `self` [Vec3] through the vector `nonzero_vec`.
