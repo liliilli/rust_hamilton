@@ -656,6 +656,13 @@ impl IBounds2 {
     }
 }
 
+impl From<IBounds2> for Bounds2 {
+    /// Convert [IBounds2] into [Bounds2].
+    fn from(bounds: IBounds2) -> Bounds2 {
+        Self::from_points(&[bounds.start().into(), bounds.exclusive_end().into()]).unwrap()
+    }
+}
+
 // ----------------------------------------------------------------------------
 //
 // BOUNDS3
@@ -1419,5 +1426,12 @@ impl IBounds3 {
         (adjacent_x && overlap_y && overlap_z)
             || (adjacent_y && overlap_x && overlap_z)
             || (adjacent_z && overlap_x && overlap_y)
+    }
+}
+
+impl From<IBounds3> for Bounds3 {
+    /// Convert [IBounds3] into [Bounds3].
+    fn from(bounds: IBounds3) -> Bounds3 {
+        Self::from_points(&[bounds.start().into(), bounds.exclusive_end().into()]).unwrap()
     }
 }

@@ -1,4 +1,4 @@
-use crate::IVec3;
+use crate::{IVec3, Vec2};
 use std::{
     fmt::Debug,
     iter,
@@ -213,6 +213,13 @@ impl iter::Sum for IVec2 {
 impl<'a> iter::Sum<&'a IVec2> for IVec2 {
     fn sum<I: Iterator<Item = &'a Self>>(iter: I) -> Self {
         iter.fold(IVec2::default(), |a, b| a + b)
+    }
+}
+
+impl From<IVec2> for Vec2 {
+    /// Convert [IVec2] into [Vec2].
+    fn from(v: IVec2) -> Vec2 {
+        Vec2::new(v.x() as f32, v.y() as f32)
     }
 }
 

@@ -1,4 +1,4 @@
-use crate::IVec2;
+use crate::{IVec2, Vec3};
 use std::{
     convert::From,
     fmt::Debug,
@@ -290,6 +290,13 @@ impl From<IVec3> for FitIVec3 {
         Self {
             arr: [vec.arr[0], vec.arr[1], vec.arr[2]],
         }
+    }
+}
+
+impl From<IVec3> for Vec3 {
+    /// Convert [IVec3] into [Vec3].
+    fn from(v: IVec3) -> Vec3 {
+        Vec3::new(v.x() as f32, v.y() as f32, v.z() as f32)
     }
 }
 
