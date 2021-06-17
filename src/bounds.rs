@@ -1,4 +1,4 @@
-use crate::{Extent2, Extent3, IExtent2, IExtent3, IVec2, IVec3, Vec2, Vec3};
+use crate::{EError, Extent2, Extent3, IExtent2, IExtent3, IVec2, IVec3, Sphere, Vec2, Vec3};
 
 // ----------------------------------------------------------------------------
 //
@@ -1045,6 +1045,31 @@ impl Bounds3 {
             || (adjacent_y && overlap_x && overlap_z)
             || (adjacent_z && overlap_x && overlap_y)
     }
+
+    /// Create [Sphere] fitting [Bounds3] region.
+    ///
+    /// If [Bounds3]'s all extent components are 0, [Sphere] can not be created.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Vec3, Bounds3, Extent3, Sphere};
+    ///
+    /// let bounds = Bounds3::new(
+    ///     Vec3::new(0f32, -1f32, -2f32),
+    ///     Extent3::new(2f32, 3f32, 5f32).unwrap()
+    /// );
+    /// let sphere = bounds.to_fitting_sphere().unwrap();
+    /// assert_eq!(sphere.center(), Vec3::new(1f32, 0.5f32, 0.5f32));
+    /// assert_eq!(sphere.radius(), (1f32 + 1.5f32.powi(2) + 2.5f32.powi(2)).sqrt());
+    /// ```
+    pub fn to_fitting_sphere(&self) -> Result<Sphere, EError> {
+        let halfvec = self.diagonal() * 0.5f32;
+        let center = self.start() + halfvec;
+        let radius = halfvec.length();
+        Sphere::new(center, radius)
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -1426,6 +1451,31 @@ impl IBounds3 {
         (adjacent_x && overlap_y && overlap_z)
             || (adjacent_y && overlap_x && overlap_z)
             || (adjacent_z && overlap_x && overlap_y)
+    }
+
+    /// Create [Sphere] fitting [IBounds3] region.
+    ///
+    /// If [IBounds3]'s all extent components are 0, [Sphere] can not be created.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{IVec3, Vec3, IBounds3, IExtent3, Sphere};
+    ///
+    /// let bounds = IBounds3::new(
+    ///     IVec3::new(0, -1, -2),
+    ///     IExtent3::new(2, 3, 5),
+    /// );
+    /// let sphere = bounds.to_fitting_sphere().unwrap();
+    /// assert_eq!(sphere.center(), Vec3::new(1f32, 0.5f32, 0.5f32));
+    /// assert_eq!(sphere.radius(), (1f32 + 1.5f32.powi(2) + 2.5f32.powi(2)).sqrt());
+    /// ```
+    pub fn to_fitting_sphere(&self) -> Result<Sphere, EError> {
+        let halfvec = Vec3::from(self.diagonal()) * 0.5f32;
+        let center = Vec3::from(self.start()) + halfvec;
+        let radius = halfvec.length();
+        Sphere::new(center, radius)
     }
 }
 
