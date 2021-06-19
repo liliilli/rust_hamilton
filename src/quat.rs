@@ -1,4 +1,4 @@
-use crate::{Degree, Mat4, NearlyEqual, Radian, Vec4};
+use crate::{Degree, Mat4, NearlyEqual, Radian, Vec3, Vec4};
 use std::ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign};
 
 /// Represents 3D rotation information, roll, pitch and yaw.
@@ -228,6 +228,32 @@ impl Quat {
             z: (self.z * rhs.w) + (self.w * rhs.z) + (self.x * rhs.y) - (self.y * rhs.x),
             w: (self.w * rhs.w) - (self.x * rhs.x) - (self.y * rhs.y) - (self.z * rhs.z),
         }
+    }
+
+    /// Multiplicate and transform given point [Vec4] which that `w` is 1.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Degree, Rotation, Quat, Vec3, Vec4};
+    ///
+    /// let quat = Quat::from_degrees(
+    ///     Degree(0.0),
+    ///     Degree(45.0),
+    ///     Degree(-90.0)
+    /// );
+    /// let vec = quat.mul_point(Vec3::unit_z().to_homogeneous());
+    /// ```
+    pub fn mul_point(&self, point: Vec4) -> Vec4 {
+        let bvec = Vec3::new(self.x(), self.y(), self.z());
+        let b2 = bvec.square_length();
+        let point = point.swizzle_xyz();
+
+        ((point * (self.w * self.w - b2))
+            + (bvec * (point.dot(bvec) * 2f32))
+            + (bvec.cross(point) * (self.w * 2f32)))
+            .to_homogeneous()
     }
 
     /// Invert [Quat].
