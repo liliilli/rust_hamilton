@@ -17,6 +17,7 @@ pub mod spherical;
 pub mod ivec2;
 pub mod ivec3;
 pub mod sphere;
+pub mod transform;
 pub mod vec2;
 pub mod vec3;
 pub mod vec4;
@@ -28,6 +29,8 @@ pub use error::EError;
 pub use extent::{Extent2, Extent3, IExtent2, IExtent3};
 pub use index::Index2;
 pub use index::Offset2;
+pub use ivec2::IVec2;
+pub use ivec3::IVec3;
 pub use mat3::Mat3;
 pub use mat4::Mat4;
 pub use nearly_equal::NearlyEqual;
@@ -37,11 +40,14 @@ pub use quat::Rotation;
 pub use ray::Ray;
 pub use sphere::Sphere;
 pub use spherical::Spherical;
-//pub use transform::Transform;
-pub use ivec2::IVec2;
-pub use ivec3::IVec3;
+pub use transform::{Transform, TransformBuilder};
 pub use vec2::Vec2;
 pub use vec3::Vec3;
 pub use vec4::Vec4;
 pub use wrappable::RangeWrappable;
 pub use wrappable::RangeWrappableMinMax;
+
+trait SignedDistance<T> {
+    ///
+    fn signed_distance_of(&self, v: &T) -> f32;
+}
