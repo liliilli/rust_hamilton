@@ -102,6 +102,16 @@ impl Bounds2 {
         self.size.area()
     }
 
+    /// Get width value of this [Bounds2].
+    pub fn width(&self) -> f32 {
+        self.size.width()
+    }
+
+    /// Get height value of this [Bounds2].
+    pub fn height(&self) -> f32 {
+        self.size.height()
+    }
+
     /// Get corner positions of this [Bounds2].
     /// Each position is located with counter-clockwised order.
     ///
@@ -423,6 +433,16 @@ impl IBounds2 {
     /// Get area value of this [IBounds2].
     pub fn area(&self) -> u64 {
         self.size.area()
+    }
+
+    /// Get width value of this [IBounds2].
+    pub fn width(&self) -> u32 {
+        self.size.width()
+    }
+
+    /// Get height value of this [IBounds2].
+    pub fn height(&self) -> u32 {
+        self.size.height()
     }
 
     /// Get corner positions of this [IBounds2].
@@ -774,6 +794,21 @@ impl Bounds3 {
     /// Get the volume of this [Bounds3].
     pub fn volume(&self) -> f32 {
         self.size.volume()
+    }
+
+    /// Get width value of this [Bounds3].
+    pub fn width(&self) -> f32 {
+        self.size.width()
+    }
+
+    /// Get height value of this [Bounds3].
+    pub fn height(&self) -> f32 {
+        self.size.height()
+    }
+
+    /// Get depth value of this [Bounds3].
+    pub fn depth(&self) -> f32 {
+        self.size.depth()
     }
 
     /// Get corner positions of this [Bounds3].
@@ -1181,6 +1216,21 @@ impl IBounds3 {
     /// Get the volume of this [IBounds3].
     pub fn volume(&self) -> u64 {
         self.size.volume()
+    }
+
+    /// Get width value of this [IBounds3].
+    pub fn width(&self) -> u32 {
+        self.size.width()
+    }
+
+    /// Get height value of this [IBounds3].
+    pub fn height(&self) -> u32 {
+        self.size.height()
+    }
+
+    /// Get depth value of this [IBounds3].
+    pub fn depth(&self) -> u32 {
+        self.size.depth()
     }
 
     /// Get corner positions of this [IBounds3].
