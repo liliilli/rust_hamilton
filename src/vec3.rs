@@ -1,4 +1,4 @@
-use crate::{EError, Plane, Quat, Radian, Ray, Vec2, Vec4};
+use crate::{EError, NearlyEqual, Plane, Quat, Radian, Ray, Vec2, Vec4};
 use std::{
     convert::From,
     fmt::Debug,
@@ -689,6 +689,26 @@ impl iter::Sum for Vec3 {
 impl<'a> iter::Sum<&'a Vec3> for Vec3 {
     fn sum<I: Iterator<Item = &'a Self>>(iter: I) -> Self {
         iter.fold(Vec3::default(), |a, b| a + b)
+    }
+}
+
+impl NearlyEqual for Vec3 {
+    type Tolerance = f32;
+
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Vec3, NearlyEqual};
+    ///
+    /// let lhs = Vec3::from_scalar(0.0);
+    /// let rhs = Vec3::from_scalar(1e-4);
+    /// assert_eq!(lhs.nearly_equal(rhs, 1e-4), true);
+    /// assert_eq!(lhs.nearly_equal(rhs, 1e-5), false);
+    /// ```
+    fn nearly_equal(&self, to: Self, tolerance: Self::Tolerance) -> bool {
+        let d = self - to;
+        d.x().abs() <= tolerance && d.y().abs() <= tolerance && d.z().abs() <= tolerance
     }
 }
 

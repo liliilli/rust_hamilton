@@ -115,6 +115,8 @@ impl Rotation {
 }
 
 impl NearlyEqual for Rotation {
+    type Tolerance = Self;
+
     fn nearly_equal(&self, to: Self, tolerance: Self) -> bool {
         let off = *self - to;
         (off.roll.0.abs() <= tolerance.roll.0)
@@ -187,6 +189,21 @@ impl Quat {
     /// ```
     pub fn from_radians(roll: Radian, yaw: Radian, pitch: Radian) -> Self {
         Rotation { roll, yaw, pitch }.into()
+    }
+
+    ///
+    ///
+    ///
+    pub fn new(x: f32, y: f32, z: f32, w: f32) -> Self {
+        let len = ((x * x) + (y * y) + (z * z) + (w * w)).sqrt();
+        assert!(len.is_normal());
+
+        Self {
+            x: x / len,
+            y: y / len,
+            z: z / len,
+            w: w / len,
+        }
     }
 
     /// Return `x` value of quaternion.
@@ -270,6 +287,10 @@ impl Quat {
             z: self.z * invdot,
             w: self.w * invdot,
         }
+    }
+
+    pub fn dot(&self, rhs: Quat) -> f32 {
+        self.x * rhs.x + self.y * rhs.y + self.z * rhs.z + self.w * rhs.w
     }
 }
 

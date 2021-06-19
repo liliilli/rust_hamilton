@@ -21,23 +21,33 @@ impl Degree {
     /// assert_eq!(Degree(180f32).to_normalized(), Degree(-180f32));
     /// assert_eq!(Degree(-180f32).to_normalized(), Degree(-180f32));
     /// ```
-    pub fn to_normalized(self) -> Self { Self(self.0.to_wrap_min_max(-180f32, 180f32)) }
+    pub fn to_normalized(self) -> Self {
+        Self(self.0.to_wrap_min_max(-180f32, 180f32))
+    }
 }
 
 impl Deref for Degree {
     type Target = f32;
-    fn deref(&self) -> &Self::Target { &self.0 }
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
 }
 
 impl DerefMut for Degree {
-    fn deref_mut(&mut self) -> &mut Self::Target { &mut self.0 }
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
 }
 
 impl From<Radian> for Degree {
-    fn from(radian: Radian) -> Self { Degree(*radian * 180f32 / PI) }
+    fn from(radian: Radian) -> Self {
+        Degree(*radian * 180f32 / PI)
+    }
 }
 
 impl NearlyEqual for Degree {
+    type Tolerance = Self;
+
     fn nearly_equal(&self, to: Self, tolerance: Self) -> bool {
         let off = *self - to;
         off.0.abs() <= tolerance.0
@@ -74,20 +84,28 @@ impl Radian {
     /// //assert_eq!(is_nearly_same(Radian(PI).to_normalized(), Radian(-PI)), true);
     /// assert_eq!(is_nearly_same(Radian(-PI).to_normalized(), Radian(-PI)), true);
     /// ```
-    pub fn to_normalized(self) -> Self { Self(self.0.to_wrap_min_max(-PI, PI)) }
+    pub fn to_normalized(self) -> Self {
+        Self(self.0.to_wrap_min_max(-PI, PI))
+    }
 }
 
 impl ops::Deref for Radian {
     type Target = f32;
 
-    fn deref(&self) -> &Self::Target { &self.0 }
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
 }
 
 impl From<Degree> for Radian {
-    fn from(degree: Degree) -> Self { Radian(*degree * PI / 180f32) }
+    fn from(degree: Degree) -> Self {
+        Radian(*degree * PI / 180f32)
+    }
 }
 
 impl NearlyEqual for Radian {
+    type Tolerance = Self;
+
     fn nearly_equal(&self, to: Self, tolerance: Self) -> bool {
         let off = *self - to;
         off.0.abs() <= tolerance.0
@@ -113,13 +131,18 @@ mod test {
         assert_eq!(value + Degree(30f32), Degree(60f32));
     }
 
-    fn is_nearly_same(lhs: Radian, rhs: Radian) -> bool { (lhs - rhs).0.abs() <= EPSILON }
+    fn is_nearly_same(lhs: Radian, rhs: Radian) -> bool {
+        (lhs - rhs).0.abs() <= EPSILON
+    }
 
     #[test]
     fn radian_test() {
         let value = Radian(PI);
         assert_eq!(value + Radian(PI), Radian(2f32 * PI));
         assert_eq!(value - Radian(PI), Radian(0f32));
-        assert_eq!(is_nearly_same(Radian(-PI).to_normalized(), Radian(-PI)), true);
+        assert_eq!(
+            is_nearly_same(Radian(-PI).to_normalized(), Radian(-PI)),
+            true
+        );
     }
 }
