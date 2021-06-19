@@ -126,7 +126,12 @@ impl Mat4 {
     ///     }
     /// }
     /// ```
-    pub fn from_column_arrays(col0: [f32; 4], col1: [f32; 4], col2: [f32; 4], col3: [f32; 4]) -> Self {
+    pub fn from_column_arrays(
+        col0: [f32; 4],
+        col1: [f32; 4],
+        col2: [f32; 4],
+        col3: [f32; 4],
+    ) -> Self {
         Self {
             val: [
                 Vec4::from_array(col0),
@@ -194,12 +199,12 @@ impl Mat4 {
     ///
     /// # Todos
     ///
-    /// * Support SSE _MM_TRANSPOSE4_PS for the fast transpose.
+    /// @TODO Support SSE _MM_TRANSPOSE4_PS for the fast transpose.
     pub fn to_transposed(&self) -> Self {
         let elems = self.as_elements();
         Self::from_elements_array([
-            elems[0], elems[4], elems[8], elems[12], elems[1], elems[5], elems[9], elems[13], elems[2], elems[6],
-            elems[10], elems[14], elems[3], elems[7], elems[11], elems[15],
+            elems[0], elems[4], elems[8], elems[12], elems[1], elems[5], elems[9], elems[13],
+            elems[2], elems[6], elems[10], elems[14], elems[3], elems[7], elems[11], elems[15],
         ])
     }
 
@@ -421,7 +426,12 @@ impl Mat4 {
     /// ```
     pub fn mul_vec4(&self, rhs: Vec4) -> Vec4 {
         let lhs = self.to_transposed();
-        Vec4::new(lhs[0].dot(rhs), lhs[1].dot(rhs), lhs[2].dot(rhs), lhs[3].dot(rhs))
+        Vec4::new(
+            lhs[0].dot(rhs),
+            lhs[1].dot(rhs),
+            lhs[2].dot(rhs),
+            lhs[3].dot(rhs),
+        )
     }
 
     /// Return slice that traverses each elements of matrix with column order.
@@ -470,12 +480,16 @@ impl Mat4 {
     ///     .enumerate()
     ///     .for_each(|(i, c)| { println!("Col {} : {:?}", i, c); });
     /// ```
-    pub fn iter(&self) -> slice::Iter<'_, Vec4> { self.val.iter() }
+    pub fn iter(&self) -> slice::Iter<'_, Vec4> {
+        self.val.iter()
+    }
 }
 
 impl Default for Mat4 {
     /// Create identity matrix.
-    fn default() -> Self { Self::from_identity() }
+    fn default() -> Self {
+        Self::from_identity()
+    }
 }
 
 impl Index<usize> for Mat4 {
@@ -504,11 +518,15 @@ impl Index<usize> for Mat4 {
     /// assert_eq!(mat[3][0], 12f32);
     /// assert_eq!(mat[3][3], 15f32);
     /// ```
-    fn index(&self, index: usize) -> &Self::Output { &self.val[index] }
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.val[index]
+    }
 }
 
 impl IndexMut<usize> for Mat4 {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output { &mut self.val[index] }
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.val[index]
+    }
 }
 
 op_matrix_binary_impl!(Mat4, Add, add, +, 0 1 2 3);
@@ -535,7 +553,9 @@ mod test {
     fn invert_test() {
         macro_rules! f32_arr { ($($e:expr),*) => { [ $($e as f32),* ] }; }
 
-        let mat = Mat4::from_elements_array(f32_arr!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
+        let mat = Mat4::from_elements_array(f32_arr!(
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+        ));
         assert_eq!(mat.to_inverted(), None);
         assert_eq!(mat.to_transposed().to_inverted(), None);
 
@@ -547,9 +567,13 @@ mod test {
         );
         assert_ne!(mat.to_inverted(), None);
 
-        assert_eq!(Mat4::from_identity().to_inverted(), Some(Mat4::from_identity()));
+        assert_eq!(
+            Mat4::from_identity().to_inverted(),
+            Some(Mat4::from_identity())
+        );
 
-        let mat = Mat4::from_elements_array(f32_arr!(4, 0, 0, 0, 0, 4, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1));
+        let mat =
+            Mat4::from_elements_array(f32_arr!(4, 0, 0, 0, 0, 4, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1));
         assert_eq!(mat.determinant(), 64f32);
         assert_eq!(
             mat.to_inverted(),
