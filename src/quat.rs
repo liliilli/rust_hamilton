@@ -191,9 +191,10 @@ impl Quat {
         Rotation { roll, yaw, pitch }.into()
     }
 
+    /// Create [Quat] but with raw `x`, `y`, `z` and `w` component which consist [Quat].
     ///
-    ///
-    ///
+    /// All input values will be normalized to be unit quaternion.
+    /// If all components could not be normalized, the application would be halt.
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> Self {
         let len = ((x * x) + (y * y) + (z * z) + (w * w)).sqrt();
         assert!(len.is_normal());
