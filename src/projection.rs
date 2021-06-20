@@ -21,7 +21,7 @@ pub fn perspective_matrix(
 ) -> Result<Mat4, EError> {
     // If fov angle is 0 or nearly 90 degrees, do not calculation.
     let half_fov_angle = fov_angle * 0.5f32;
-    if half_fov_angle.nearly_equal(Degree(90.0).into(), 1e-3f32) || half_fov_angle.is_normal() {
+    if half_fov_angle.nearly_equal(Degree(90.0).into(), 1e-3f32) || !half_fov_angle.is_normal() {
         return Err(EError::InvalidRadian(fov_angle));
     }
 
@@ -74,7 +74,7 @@ pub fn infinite_far_perspective_matrix(
 ) -> Result<Mat4, EError> {
     // If fov angle is 0 or nearly 90 degrees, do not calculation.
     let half_fov_angle = fov_angle * 0.5f32;
-    if half_fov_angle.nearly_equal(Degree(90.0).into(), 1e-3f32) || half_fov_angle.is_normal() {
+    if half_fov_angle.nearly_equal(Degree(90.0).into(), 1e-3f32) || !half_fov_angle.is_normal() {
         return Err(EError::InvalidRadian(fov_angle));
     }
 
@@ -125,7 +125,7 @@ pub fn orthographic_matrix(
 
     // If fov angle is 0 or nearly 90 degrees, do not calculation.
     let half_fov_angle = fov_angle * 0.5f32;
-    if half_fov_angle.nearly_equal(Degree(90.0).into(), 1e-3f32) || half_fov_angle.is_normal() {
+    if half_fov_angle.nearly_equal(Degree(90.0).into(), 1e-3f32) || !half_fov_angle.is_normal() {
         return Err(EError::InvalidRadian(fov_angle));
     }
 
