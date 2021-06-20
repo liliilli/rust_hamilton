@@ -1,4 +1,4 @@
-use crate::{EError, Vec3};
+use crate::{gamma_bound, Bounds3, EError, Vec3};
 
 /// A `Ray` is semi-infinite line specified by its `origin` and `direction`.
 ///
@@ -119,5 +119,125 @@ impl Ray {
 
             (shortest_t2vec - shortest_t1vec).length()
         }
+    }
+
+    /// Check this [Ray] is intersected to given [Bounds3].
+    /// If intersected, return first intersection `t` and last intersection `t` value.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Ray, Vec3, NearlyEqual, Bounds3, Extent3};
+    ///
+    /// let ray = Ray::new(
+    ///     Vec3::default(),
+    ///     Vec3::new(1.0, 0.5, 2.0)
+    /// ).unwrap();
+    /// let intersected_bound = Bounds3::new(
+    ///     Vec3::new(3.5, 2.0, 8.0),
+    ///     Extent3::new(3.0, 1.0, 3.0).unwrap(),
+    /// );
+    /// let t0t1 = ray.is_intersected_to_bounds3(&intersected_bound);
+    /// assert_eq!(t0t1.is_some(), true);
+    /// let (t0, t1) = t0t1.unwrap();
+    ///
+    /// let p0 = ray.to_proceeded(t0).origin;
+    /// let p1 = ray.to_proceeded(t0).origin;
+    /// assert!((p1 - p0).x() <= intersected_bound.width());
+    /// assert!((p1 - p0).y() <= intersected_bound.height());
+    /// assert!((p1 - p0).z() <= intersected_bound.depth());
+    /// ```
+    ///
+    /// If not intersected, return `None`.
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Ray, Vec3, NearlyEqual, Bounds3, Extent3};
+    ///
+    /// let ray = Ray::new(
+    ///     Vec3::default(),
+    ///     Vec3::unit_x(),
+    /// ).unwrap();
+    /// let not_intersected_bound = Bounds3::new(
+    ///     Vec3::new(1.0, -1.0, 1.0),
+    ///     Extent3::new(3.0, 1.5, 3.0).unwrap(),
+    /// );
+    /// let should_none = ray.is_intersected_to_bounds3(&not_intersected_bound)
+    ///     .is_none();
+    /// assert_eq!(should_none, true);
+    /// ```
+    ///
+    /// If ray is inside of bounding box, returned values have different sign.
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::{Ray, Vec3, NearlyEqual, Bounds3, Extent3};
+    ///
+    /// let ray = Ray::new(
+    ///     Vec3::new(5.5, 2.5, 9.5),
+    ///     Vec3::new(1.0, 2.0, 3.0)
+    /// ).unwrap();
+    /// let intersected_bound = Bounds3::new(
+    ///     Vec3::new(3.5, 2.0, 8.0),
+    ///     Extent3::new(3.0, 2.0, 3.0).unwrap(),
+    /// );
+    /// let t0t1 = ray.is_intersected_to_bounds3(&intersected_bound);
+    /// assert_eq!(t0t1.is_some(), true);
+    /// let (t0, t1) = t0t1.unwrap();
+    /// assert!(t0 < 0.0);
+    /// assert!(t1 > 0.0);
+    /// ```
+    pub fn is_intersected_to_bounds3(&self, bound: &Bounds3) -> Option<(f32, f32)> {
+        let mut t0 = f32::MIN;
+        let mut t1 = f32::MAX;
+
+        // If ray's direction's squared-length is not normal,
+        // Assume that this ray does not move to somewhere so failed.
+        if !self.direction().square_length().is_normal() {
+            return None;
+        }
+
+        // Check each axis's ray movement unit,
+        // Get near and far.
+        let dir = self.direction();
+        let bs = bound.start();
+        let be = bound.exclusive_end();
+        for i in 0..3 {
+            // If direction is not normal (0, or subnormal, etc), we just pass it.
+            let movunit = dir[i];
+            if !movunit.is_normal() {
+                // Check given axis's position can be overlapped.
+                // If not, we have to return `None`.
+                let o = self.origin[i];
+                if bs[i] > o || be[i] <= o {
+                    return None;
+                }
+                continue;
+            }
+
+            // Get tnear and tfar.
+            let (tnear, tfar) = {
+                let invmovunit = movunit.recip();
+                let tn = (bs[i] - self.origin[i]) * invmovunit;
+                let tf = (be[i] - self.origin[i]) * invmovunit;
+                if tn > tf {
+                    (tf, tn)
+                } else {
+                    (tn, tf)
+                }
+            };
+
+            // Update tfar to ensure robust ray-bounds intersection.
+            let tfar = tfar * (1.0 + (2.0 * gamma_bound(3)));
+            t0 = t0.max(tnear);
+            t1 = t1.min(tfar);
+            if t0 > t1 {
+                // Failed. This ray may not intersect given Bounds3.
+                return None;
+            }
+        }
+
+        Some((t0, t1))
     }
 }
