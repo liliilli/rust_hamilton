@@ -78,8 +78,6 @@ impl Transform {
     /// use math::{Vec3, Transform};
     ///
     /// let transform = Transform::from_scaling(Vec3::new(3.0, 4.0, 5.0));
-    /// assert_eq!(transform.translation(), Vec3::from_scalar(0.0));
-    /// assert_eq!(transform.scale(), Vec3::new(3.0, 4.0, 5.0));
     /// ```
     pub fn from_scaling(scaling: Vec3) -> Self {
         let mut v = Self::from_identity();
