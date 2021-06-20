@@ -1,6 +1,7 @@
 use crate::{NearlyEqual, RangeWrappableMinMax};
 use std::{
     f32::consts::PI,
+    fmt::Display,
     ops::{self, Add, AddAssign, Deref, DerefMut, Mul, MulAssign, Sub, SubAssign},
 };
 
@@ -45,12 +46,23 @@ impl From<Radian> for Degree {
     }
 }
 
-impl NearlyEqual for Degree {
-    type Tolerance = Self;
-
+impl NearlyEqual<Self> for Degree {
     fn nearly_equal(&self, to: Self, tolerance: Self) -> bool {
         let off = *self - to;
         off.0.abs() <= tolerance.0
+    }
+}
+
+impl NearlyEqual<f32> for Degree {
+    fn nearly_equal(&self, to: Self, tolerance: f32) -> bool {
+        let off = *self - to;
+        off.0.abs() <= tolerance
+    }
+}
+
+impl Display for Degree {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:.3} degree", self.0)
     }
 }
 
@@ -103,12 +115,23 @@ impl From<Degree> for Radian {
     }
 }
 
-impl NearlyEqual for Radian {
-    type Tolerance = Self;
-
+impl NearlyEqual<Self> for Radian {
     fn nearly_equal(&self, to: Self, tolerance: Self) -> bool {
         let off = *self - to;
         off.0.abs() <= tolerance.0
+    }
+}
+
+impl NearlyEqual<f32> for Radian {
+    fn nearly_equal(&self, to: Self, tolerance: f32) -> bool {
+        let off = *self - to;
+        off.0.abs() <= tolerance
+    }
+}
+
+impl Display for Radian {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:.3} radian", self.0)
     }
 }
 

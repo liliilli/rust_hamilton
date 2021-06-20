@@ -114,9 +114,7 @@ impl Rotation {
     }
 }
 
-impl NearlyEqual for Rotation {
-    type Tolerance = Self;
-
+impl NearlyEqual<Self> for Rotation {
     fn nearly_equal(&self, to: Self, tolerance: Self) -> bool {
         let off = *self - to;
         (off.roll.0.abs() <= tolerance.roll.0)

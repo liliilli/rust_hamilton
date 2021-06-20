@@ -692,9 +692,7 @@ impl<'a> iter::Sum<&'a Vec3> for Vec3 {
     }
 }
 
-impl NearlyEqual for Vec3 {
-    type Tolerance = f32;
-
+impl NearlyEqual<f32> for Vec3 {
     /// # Examples
     ///
     /// ```
@@ -706,7 +704,7 @@ impl NearlyEqual for Vec3 {
     /// assert_eq!(lhs.nearly_equal(rhs, 1e-4), true);
     /// assert_eq!(lhs.nearly_equal(rhs, 1e-5), false);
     /// ```
-    fn nearly_equal(&self, to: Self, tolerance: Self::Tolerance) -> bool {
+    fn nearly_equal(&self, to: Self, tolerance: f32) -> bool {
         let d = self - to;
         d.x().abs() <= tolerance && d.y().abs() <= tolerance && d.z().abs() <= tolerance
     }

@@ -7,23 +7,19 @@ use std::primitive::{f32, f64};
 /// ```
 ///
 /// ```
-pub trait NearlyEqual
+pub trait NearlyEqual<Tolerance = Self>
 where
     Self: Copy + Clone,
 {
-    type Tolerance;
-
     /// Check given value is nearly equal to given value `to` with `tolerance`.
-    fn nearly_equal(&self, to: Self, tolerance: Self::Tolerance) -> bool;
+    fn nearly_equal(&self, to: Self, tolerance: Tolerance) -> bool;
 }
 
 /// Implement [NearlyEqual] to all floating point arithmetic types.
 macro_rules! op_nearly_equal_impl {
     ($($t:ty),*) => {
         $(
-            impl NearlyEqual for $t {
-                type Tolerance = $t;
-
+            impl NearlyEqual<$t> for $t {
                 fn nearly_equal(&self, to: $t, tolerance: $t) -> bool {
                     (self - to).abs() <= tolerance
                 }
