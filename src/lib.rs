@@ -3,6 +3,7 @@ mod internal_macro;
 
 pub mod angle;
 pub mod bounds;
+pub mod color;
 pub mod error;
 pub mod extent;
 pub mod index;
@@ -26,6 +27,7 @@ pub mod wrappable;
 
 pub use angle::{Degree, Radian};
 pub use bounds::{Bounds2, Bounds3, IBounds2, IBounds3};
+pub use color::ColorRgba;
 pub use error::EError;
 pub use extent::{Extent2, Extent3, IExtent2, IExtent3};
 pub use index::Index2;
