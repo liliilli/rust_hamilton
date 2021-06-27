@@ -22,6 +22,7 @@ use crate::Vec4;
 ///
 /// See <https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format>
 ///
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ColorRgba {
     data: Vec4,
 }
