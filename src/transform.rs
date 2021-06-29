@@ -1,4 +1,4 @@
-use std::ops::Mul;
+use std::ops::{Index, Mul};
 
 use crate::{Mat4, Quat, Rotation, Vec3, Vec4};
 
@@ -306,6 +306,15 @@ impl Transform {
         let d2 = t[0][2] * (t[1][0] * t[2][1] - t[1][1] * t[2][0]);
         let det = d0 - d1 + d2;
         det > 0.0
+    }
+}
+
+impl Index<usize> for Transform {
+    type Output = Vec4;
+
+    /// Perform indexing but as column major order.
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.transform[index]
     }
 }
 
