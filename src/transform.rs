@@ -161,14 +161,18 @@ impl Transform {
     /// );
     /// ```
     pub fn from_lookat(forward: Vec3, world_up: Vec3, translation: Vec3) -> Self {
-        let forward = forward.to_normalized().unwrap();
+        let forwardz = forward.to_normalized().unwrap();
         let sidex = forward.cross(world_up.to_normalized().unwrap());
         let upy = sidex.cross(forward);
+        let translation_x = (translation * -1f32).dot(sidex);
+        let translation_y = (translation * -1f32).dot(upy);
+        let translation_z = (translation * -1f32).dot(forwardz);
+
         let lookat_mat = Mat4::from_column_arrays(
-            [sidex.x(), upy.x(), forward.x(), 0.0],
-            [sidex.y(), upy.y(), forward.y(), 0.0],
-            [sidex.z(), upy.z(), forward.z(), 0.0],
-            [translation.x(), translation.y(), translation.z(), 1.0],
+            [sidex.x(), upy.x(), forwardz.x(), 0.0],
+            [sidex.y(), upy.y(), forwardz.y(), 0.0],
+            [sidex.z(), upy.z(), forwardz.z(), 0.0],
+            [translation_x, translation_y, translation_z, 1.0],
         );
         Self {
             transform: lookat_mat,
