@@ -146,27 +146,19 @@ impl ColorRgba {
 
     /// Get red channel component color value.
     #[inline]
-    pub fn r(&self) -> f32 {
-        self.data.x()
-    }
+    pub fn r(&self) -> f32 { self.data.x() }
 
     /// Get green channel component color value.
     #[inline]
-    pub fn g(&self) -> f32 {
-        self.data.y()
-    }
+    pub fn g(&self) -> f32 { self.data.y() }
 
     /// Get blue channel component color value.
     #[inline]
-    pub fn b(&self) -> f32 {
-        self.data.z()
-    }
+    pub fn b(&self) -> f32 { self.data.z() }
 
     ///
     #[inline]
-    pub fn a(&self) -> f32 {
-        self.data.w()
-    }
+    pub fn a(&self) -> f32 { self.data.w() }
 
     /// Get `y` coefficient of XYZ color of this RGBA color.
     ///
@@ -201,92 +193,75 @@ impl ColorRgba {
     // ------------------------------------------------------------------------
 
     /// Get `maroon` color as [`ColorRgba`].
-    pub fn maroon() -> Self {
-        Self::new_opaque_rgb(0.5, 0.0, 0.0)
-    }
+    #[inline]
+    pub fn maroon() -> Self { Self::new_opaque_rgb(0.5, 0.0, 0.0) }
 
     /// Get `red` color as [`ColorRgba`].
-    pub fn red() -> Self {
-        Self::new_opaque_rgb(1.0, 0.0, 0.0)
-    }
+    #[inline]
+    pub fn red() -> Self { Self::new_opaque_rgb(1.0, 0.0, 0.0) }
 
     /// Get `orange` color as [`ColorRgba`].
-    pub fn orange() -> Self {
-        Self::new_opaque_rgb(1.0, u8_to_f32(0xa5), 0.0)
-    }
+    #[inline]
+    pub fn orange() -> Self { Self::new_opaque_rgb(1.0, u8_to_f32(0xa5), 0.0) }
 
     /// Get `yellow` color as [`ColorRgba`].
-    pub fn yellow() -> Self {
-        Self::new_opaque_rgb(1.0, 1.0, 0.0)
-    }
+    #[inline]
+    pub fn yellow() -> Self { Self::new_opaque_rgb(1.0, 1.0, 0.0) }
 
     /// Get `olive` color as [`ColorRgba`].
-    pub fn olive() -> Self {
-        Self::new_opaque_rgb(0.5, 0.5, 0.0)
-    }
+    #[inline]
+    pub fn olive() -> Self { Self::new_opaque_rgb(0.5, 0.5, 0.0) }
 
     /// Get `purple` color as [`ColorRgba`].
-    pub fn purple() -> Self {
-        Self::new_opaque_rgb(0.5, 0.0, 0.5)
-    }
+    #[inline]
+    pub fn purple() -> Self { Self::new_opaque_rgb(0.5, 0.0, 0.5) }
 
     /// Get `fuchsia` color as [`ColorRgba`].
-    pub fn fuchsia() -> Self {
-        Self::new_opaque_rgb(1.0, 0.0, 1.0)
-    }
+    #[inline]
+    pub fn fuchsia() -> Self { Self::new_opaque_rgb(1.0, 0.0, 1.0) }
 
     /// Get `white` color as [`ColorRgba`].
-    pub fn white() -> Self {
-        Self::new_opaque_rgb(1.0, 1.0, 1.0)
-    }
+    #[inline]
+    pub fn white() -> Self { Self::new_opaque_rgb(1.0, 1.0, 1.0) }
 
     /// Get `lime` color as [`ColorRgba`].
-    pub fn lime() -> Self {
-        Self::new_opaque_rgb(0.0, 1.0, 0.0)
-    }
+    #[inline]
+    pub fn lime() -> Self { Self::new_opaque_rgb(0.0, 1.0, 0.0) }
 
     /// Get `green` color as [`ColorRgba`].
-    pub fn green() -> Self {
-        Self::new_opaque_rgb(0.0, 0.5, 0.0)
-    }
+    #[inline]
+    pub fn green() -> Self { Self::new_opaque_rgb(0.0, 0.5, 0.0) }
 
     /// Get `navy` color as [`ColorRgba`].
-    pub fn navy() -> Self {
-        Self::new_opaque_rgb(0.0, 0.0, 0.5)
-    }
+    #[inline]
+    pub fn navy() -> Self { Self::new_opaque_rgb(0.0, 0.0, 0.5) }
 
     /// Get `blue` color as [`ColorRgba`].
-    pub fn blue() -> Self {
-        Self::new_opaque_rgb(0.0, 0.0, 1.0)
-    }
+    #[inline]
+    pub fn blue() -> Self { Self::new_opaque_rgb(0.0, 0.0, 1.0) }
 
     /// Get `aqua` color as [`ColorRgba`].
-    pub fn aqua() -> Self {
-        Self::new_opaque_rgb(0.0, 1.0, 1.0)
-    }
+    #[inline]
+    pub fn aqua() -> Self { Self::new_opaque_rgb(0.0, 1.0, 1.0) }
 
     /// Get `teal` color as [`ColorRgba`].
-    pub fn teal() -> Self {
-        Self::new_opaque_rgb(0.0, 0.5, 0.5)
-    }
+    #[inline]
+    pub fn teal() -> Self { Self::new_opaque_rgb(0.0, 0.5, 0.5) }
 
     /// Get `black` color as [`ColorRgba`].
-    pub fn black() -> Self {
-        Self::new_opaque_rgb(0.0, 0.0, 0.0)
-    }
+    #[inline]
+    pub fn black() -> Self { Self::new_opaque_rgb(0.0, 0.0, 0.0) }
 
     /// Get `silver` color as [`ColorRgba`].
+    #[inline]
     pub fn silver() -> Self {
         let v = u8_to_f32(0xc0);
         Self::new_opaque_rgb(v, v, v)
     }
 
     /// Get `gray` color as [`ColorRgba`].
-    pub fn gray() -> Self {
-        Self::new_opaque_rgb(0.5, 0.5, 0.5)
-    }
+    #[inline]
+    pub fn gray() -> Self { Self::new_opaque_rgb(0.5, 0.5, 0.5) }
 }
 
-fn u8_to_f32(v: u8) -> f32 {
-    ((v as f32) / 255.0).clamp(0.0, 1.0)
-}
+fn u8_to_f32(v: u8) -> f32 { ((v as f32) / 255.0).clamp(0.0, 1.0) }
