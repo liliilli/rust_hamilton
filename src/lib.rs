@@ -27,7 +27,7 @@ pub mod wrappable;
 
 pub use angle::{Degree, Radian};
 pub use bounds::{Bounds2, Bounds3, IBounds2, IBounds3};
-pub use color::ColorRgba;
+pub use color::*;
 pub use error::EError;
 pub use extent::{Extent2, Extent3, IExtent2, IExtent3};
 pub use index::Index2;
@@ -64,9 +64,7 @@ const MACHINE_EPSILON: f32 = f32::EPSILON * 0.5f32;
 /// See <https://en.wikipedia.org/wiki/Error_analysis_(mathematics)>.
 ///
 /// TODO : If floating point arithmetic function was `const`, let it be `const`.
-pub fn gamma_bound(i: i32) -> f32 {
-    ((i as f32) * MACHINE_EPSILON) / (1.0 - ((i as f32) * MACHINE_EPSILON))
-}
+pub fn gamma_bound(i: i32) -> f32 { ((i as f32) * MACHINE_EPSILON) / (1.0 - ((i as f32) * MACHINE_EPSILON)) }
 
 /// Get y-aligned and x-scaled ratio value.
 ///
