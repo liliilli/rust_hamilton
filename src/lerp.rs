@@ -15,6 +15,46 @@ pub trait Lerp<Rhs = Self> {
 //
 // ----------------------------------------------------------------------------
 
+impl Lerp for f32 {
+    type Output = f32;
+
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::lerp::Lerp;
+    ///
+    /// let src = 0.0f32;
+    /// let dst = 10.0f32;
+    /// let new = src.lerp(&dst, 0.5);
+    /// assert_eq!(new, 0.5f32);
+    /// ```
+    fn lerp(&self, rhs: &Self, t: f32) -> Self::Output {
+        let d = rhs - self;
+        (d * t) + self
+    }
+}
+
+impl Lerp for f64 {
+    type Output = f64;
+
+    /// # Examples
+    ///
+    /// ```
+    /// use hamilton as math;
+    /// use math::lerp::Lerp;
+    ///
+    /// let src = 0.0f64;
+    /// let dst = 10.0f64;
+    /// let new = src.lerp(&dst, 0.5);
+    /// assert_eq!(new, 0.5f64);
+    /// ```
+    fn lerp(&self, rhs: &Self, t: f32) -> Self::Output {
+        let d = rhs - self;
+        (d * (t as f64)) + self
+    }
+}
+
 impl Lerp for Vec2 {
     type Output = Self;
 
@@ -91,8 +131,7 @@ impl Lerp for Quat {
         let d1 = Vec4::new(rhs.x(), rhs.y(), rhs.z(), rhs.w());
         let dd = {
             let d = d1 - (d0 * costheta);
-            let dsqrt =
-                (d.x() * d.x()) + (d.y() * d.y()) + (d.z() * d.z()) + (d.w() * d.w()).sqrt();
+            let dsqrt = (d.x() * d.x()) + (d.y() * d.y()) + (d.z() * d.z()) + (d.w() * d.w()).sqrt();
             d * dsqrt.recip()
         };
         let quat_v = (d0 * theta_p.cos()) + (dd * theta_p.sin());
